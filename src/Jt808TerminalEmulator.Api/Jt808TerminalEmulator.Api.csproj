@@ -4,5 +4,9 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Jt808TerminalEmulator.Core\Jt808TerminalEmulator.Core.csproj" />
+  </ItemGroup>
+
 
 </Project>
