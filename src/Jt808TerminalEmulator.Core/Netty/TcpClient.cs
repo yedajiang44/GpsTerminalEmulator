@@ -32,7 +32,7 @@ namespace Jt808TerminalEmulator.Core.Netty
                 {
                     var scope = serviceProvider.CreateScope().ServiceProvider;
                     IChannelPipeline pipeline = channel.Pipeline;
-                    pipeline.AddLast(new IdleStateHandler(300, 5, 30));
+                    pipeline.AddLast(new IdleStateHandler(3000, 0, 0));
                     pipeline.AddLast(new DelimiterBasedFrameDecoder(1024, Unpooled.CopiedBuffer(new byte[] { 0x7e }), Unpooled.CopiedBuffer(new byte[] { 0x7e })));
                     pipeline.AddLast(scope.GetRequiredService<Jt808Encoder>());
                     pipeline.AddLast(scope.GetRequiredService<Jt808Decoder>());
@@ -41,13 +41,14 @@ namespace Jt808TerminalEmulator.Core.Netty
         }
 
 
-        public async Task<bool> ConnectAsync(string ip, int port)
+        public Task ConnectAsync(string ip, int port)
         {
-            if (channel?.Open == true) return true;
-            return await bootstrap.ConnectAsync(ip, port).ContinueWith(x => channel = x.Result) != default(IChannel);
+            if (channel?.Open == true)
+                return Task.CompletedTask;
+            return bootstrap.ConnectAsync(ip, port).ContinueWith(task => { channel = task.Result; }, TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
-        public Task Send(Jt808PackageInfo data, Action action = default) => channel.WriteAndFlushAsync(data).ContinueWith(x => { if (action != default) { action(); } });
+        public Task Send(Jt808PackageInfo data, Action action = default) => channel?.WriteAndFlushAsync(data).ContinueWith(x => { if (action != default) { action(); } });
         public Task Send(byte[] data, Action action = default) => channel.WriteAndFlushAsync(data).ContinueWith(x => { if (action != default) { action(); } });
     }
 
@@ -55,7 +56,7 @@ namespace Jt808TerminalEmulator.Core.Netty
     {
         public string ChannelId { get; }
         public string PhoneNumber { get; set; }
-        Task<bool> ConnectAsync(string ip, int port);
+        Task ConnectAsync(string ip, int port);
         Task Send(Jt808PackageInfo data, Action action = default);
         Task Send(byte[] data, Action action = default);
     }
