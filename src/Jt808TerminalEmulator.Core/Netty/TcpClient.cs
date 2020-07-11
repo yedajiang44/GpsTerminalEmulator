@@ -1,5 +1,6 @@
 ﻿using DotNetty.Buffers;
 using DotNetty.Codecs;
+using DotNetty.Handlers.Timeout;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
@@ -19,6 +20,8 @@ namespace Jt808TerminalEmulator.Core.Netty
         private IChannel channel;
         public string PhoneNumber { get; set; }
 
+        public string ChannelId => channel?.Id.AsLongText();
+
         public TcpClient(IServiceProvider serviceProvider)
         {
             eventLoopGroup = new MultithreadEventLoopGroup();
@@ -29,6 +32,7 @@ namespace Jt808TerminalEmulator.Core.Netty
                 {
                     var scope = serviceProvider.CreateScope().ServiceProvider;
                     IChannelPipeline pipeline = channel.Pipeline;
+                    pipeline.AddLast(new IdleStateHandler(300, 5, 30));
                     pipeline.AddLast(new DelimiterBasedFrameDecoder(1024, Unpooled.CopiedBuffer(new byte[] { 0x7e }), Unpooled.CopiedBuffer(new byte[] { 0x7e })));
                     pipeline.AddLast(scope.GetRequiredService<Jt808Encoder>());
                     pipeline.AddLast(scope.GetRequiredService<Jt808Decoder>());
@@ -49,6 +53,7 @@ namespace Jt808TerminalEmulator.Core.Netty
 
     public interface ITcpClient
     {
+        public string ChannelId { get; }
         public string PhoneNumber { get; set; }
         Task<bool> ConnectAsync(string ip, int port);
         Task Send(Jt808PackageInfo data, Action action = default);
