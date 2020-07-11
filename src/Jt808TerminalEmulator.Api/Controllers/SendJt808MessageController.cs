@@ -20,13 +20,13 @@ namespace Jt808TerminalEmulator.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> IndexAsync()
+        public async Task<IActionResult> IndexAsync(string phoneNumber)
         {
             try
             {
-                var client = await tcpClientFactory.CreateTcpClient();
+                var package = new Jt808PackageInfo { Header = new Header { PhoneNumber = phoneNumber }, Body = new Jt808_0x0002_Heartbeat() };
+                var client = await tcpClientFactory.CreateTcpClient(package.Header.PhoneNumber);
                 await client.ConnectAsync("127.0.0.1", 808);
-                var package = new Jt808PackageInfo { Header = new Header { PhoneNumber = "13800138000" }, Body = new Jt808_0x0002_Heartbeat() };
                 await client.Send(package);
                 return Ok(new { flag = true, data = package });
             }
