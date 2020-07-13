@@ -17,13 +17,13 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
     {
         private readonly ILogger logger;
         private readonly PackageConverter packageConverter;
-        private readonly ITcpClientManager tcpClientManager;
+        private readonly ISessionManager sessionManager;
 
-        public Jt808TcpHandler(ILogger<Jt808TcpHandler> logger, PackageConverter packageConverter, ITcpClientManager tcpClientManager)
+        public Jt808TcpHandler(ILogger<Jt808TcpHandler> logger, PackageConverter packageConverter, ISessionManager sessionManager)
         {
             this.logger = logger;
             this.packageConverter = packageConverter;
-            this.tcpClientManager = tcpClientManager;
+            this.sessionManager = sessionManager;
         }
 
         protected override void ChannelRead0(IChannelHandlerContext ctx, byte[] msg)
@@ -50,7 +50,7 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
                     context.CloseAsync();
                     break;
                 case IdleStateEvent writerIdle when writerIdle.State == IdleState.WriterIdle:
-                    var phoneNumber = tcpClientManager.GetTcpClients().FirstOrDefault(x => x.ChannelId == context.Channel.Id.AsLongText()).PhoneNumber;
+                    var phoneNumber = sessionManager.GetSessions().FirstOrDefault(x => x.Id == context.Channel.Id.AsLongText()).PhoneNumber;
                     context.WriteAndFlushAsync(new Jt808PackageInfo
                     {
                         Header = new Header

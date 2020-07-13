@@ -12,8 +12,8 @@ namespace Jt808TerminalEmulator.Core.Abstract
         readonly ConcurrentDictionary<string, ITcpClient> clients = new ConcurrentDictionary<string, ITcpClient>();
         public void Add(ITcpClient client)
         {
-            if (string.IsNullOrEmpty(client.PhoneNumber)) throw new NullReferenceException($"the {nameof(client.PhoneNumber)} is null or empty");
-            clients.AddOrUpdate(client.PhoneNumber, client, (phoneNumber, _) => client);
+            if (string.IsNullOrEmpty(client.Id)) throw new NullReferenceException($"the {nameof(client.Id)} is null or empty");
+            clients.AddOrUpdate(client.Id, client, (phoneNumber, _) => client);
         }
 
         public ITcpClient GetTcpClient(string phoneNumber)
@@ -28,7 +28,6 @@ namespace Jt808TerminalEmulator.Core.Abstract
     public interface ITcpClientManager
     {
         void Add(ITcpClient client);
-
         ITcpClient GetTcpClient(string phoneNumber);
         IEnumerable<ITcpClient> GetTcpClients();
     }

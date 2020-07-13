@@ -19,14 +19,14 @@ namespace Jt808TerminalEmulator.Core
             this.tcpClientManager = tcpClientManager;
         }
 
-        public Task<ITcpClient> CreateTcpClient(string phoneNumber, bool fromCache = true, bool addManager = true)
+        public Task<ITcpClient> CreateTcpClient(string clientId, bool fromCache = true, bool addManager = true)
         {
-            if (string.IsNullOrEmpty(phoneNumber)) throw new NullReferenceException($"the {nameof(phoneNumber)} is null or empty");
-            var client = fromCache ? tcpClientManager.GetTcpClient(phoneNumber) : default;
+            if (string.IsNullOrEmpty(clientId)) throw new NullReferenceException($"the {nameof(clientId)} is null or empty");
+            var client = fromCache ? tcpClientManager.GetTcpClient(clientId) : default;
             if (client == default)
             {
                 client = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<ITcpClient>();
-                client.PhoneNumber = phoneNumber;
+                client.Id = clientId;
                 if (addManager)
                     tcpClientManager.Add(client);
             }

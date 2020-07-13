@@ -26,18 +26,19 @@ namespace Jt808TerminalEmulator.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> IndexAsync(string phoneNumber)
+        public async Task<IActionResult> IndexAsync(string phoneNumber = "13800138000")
         {
             try
             {
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-                for (int index = 0; index < 5000; index++)
+                var client = await tcpClientFactory.CreateTcpClient($"{phoneNumber}");
+                Parallel.For(0, 5000, index =>
                 {
-                    await tcpClientFactory.CreateTcpClient($"{phoneNumber}{index}").ContinueWith(client => client.Result.ConnectAsync("127.0.0.1", 808).Wait(), TaskContinuationOptions.OnlyOnRanToCompletion);
-                }
+                    client.ConnectAsync("127.0.0.1", 2012, $"{phoneNumber}{index}");
+                });
                 stopwatch.Stop();
-                return Ok(new { flag = true, data = tcpClientManager.GetTcpClients().Where(x => string.IsNullOrEmpty(x.ChannelId)), message = $"耗时：{stopwatch.ElapsedMilliseconds}毫秒" });
+                return Ok(new { flag = true, data = tcpClientManager.GetTcpClients().SelectMany(x => x.Sesions().Result), message = $"耗时：{stopwatch.ElapsedMilliseconds}毫秒" });
             }
             catch (Exception e)
             {

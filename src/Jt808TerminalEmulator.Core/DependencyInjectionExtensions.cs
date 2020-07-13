@@ -17,8 +17,9 @@ namespace Jt808TerminalEmulator.Core
         {
             return services.AddSingleton<PackageConverter>()
                 .AddSingleton<ITcpClientManager, TcpClientManager>()
-                .AddScoped<ITcpClient, TcpClient>()
+                .AddSingleton<ISessionManager, SessionManager>()
                 .AddSingleton<ITcpClientFactory, TcpClientFactory>()
+                .AddScoped<ITcpClient, TcpClient>()
                 .AddScoped<Jt808TcpHandler>()
                 .AddScoped<Jt808Decoder>()
                 .AddScoped<Jt808Encoder>();
