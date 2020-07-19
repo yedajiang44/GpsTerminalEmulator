@@ -50,15 +50,16 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
                     context.CloseAsync();
                     break;
                 case IdleStateEvent writerIdle when writerIdle.State == IdleState.WriterIdle:
-                    var phoneNumber = sessionManager.GetSessions().FirstOrDefault(x => x.Id == context.Channel.Id.AsLongText()).PhoneNumber;
-                    context.WriteAndFlushAsync(new Jt808PackageInfo
-                    {
-                        Header = new Header
+                    var session = sessionManager.GetSessions().FirstOrDefault(x => x.Id == context.Channel.Id.AsLongText());
+                    if (session != default)
+                        context.WriteAndFlushAsync(new Jt808PackageInfo
                         {
-                            PhoneNumber = phoneNumber
-                        },
-                        Body = new Jt808_0x0002_Heartbeat()
-                    });
+                            Header = new Header
+                            {
+                                PhoneNumber = session.PhoneNumber
+                            },
+                            Body = new Jt808_0x0002_Heartbeat()
+                        });
                     break;
             }
 
