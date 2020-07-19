@@ -37,7 +37,7 @@ namespace Jt808TerminalEmulator.Core.Netty
                 {
                     var scope = serviceProvider.CreateScope().ServiceProvider;
                     IChannelPipeline pipeline = channel.Pipeline;
-                    pipeline.AddLast(new IdleStateHandler(3000, 30, 0));
+                    pipeline.AddLast(new IdleStateHandler(3000, 5, 0));
                     pipeline.AddLast(new DelimiterBasedFrameDecoder(1024, Unpooled.CopiedBuffer(new byte[] { 0x7e }), Unpooled.CopiedBuffer(new byte[] { 0x7e })));
                     pipeline.AddLast(scope.GetRequiredService<Jt808Encoder>());
                     pipeline.AddLast(scope.GetRequiredService<Jt808Decoder>());
