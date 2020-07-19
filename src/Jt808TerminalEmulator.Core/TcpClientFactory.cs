@@ -35,6 +35,6 @@ namespace Jt808TerminalEmulator.Core
     }
     public interface ITcpClientFactory
     {
-        Task<ITcpClient> CreateTcpClient(string phoneNumber, bool fromCache = true, bool addManager = true);
+        Task<ITcpClient> CreateTcpClient(string clientId = "default", bool fromCache = true, bool addManager = true);
     }
 }
