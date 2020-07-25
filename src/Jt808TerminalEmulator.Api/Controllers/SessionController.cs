@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jt808TerminalEmulator.Core;
 using Jt808TerminalEmulator.Core.Abstract;
+using Jt808TerminalEmulator.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,10 +16,12 @@ namespace Jt808TerminalEmulator.Api.Controllers
     public class SessionController : ControllerBase
     {
         private readonly ITcpClientManager tcpClientManager;
+        private readonly ITerminalService terminalService;
 
-        public SessionController(ITcpClientManager tcpClientManager)
+        public SessionController(ITcpClientManager tcpClientManager, ITerminalService terminalService)
         {
             this.tcpClientManager = tcpClientManager;
+            this.terminalService = terminalService;
         }
 
         [HttpGet]

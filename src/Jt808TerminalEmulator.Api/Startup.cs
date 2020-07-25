@@ -1,16 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Jt808TerminalEmulator.Core;
+using Jt808TerminalEmulator.Interface;
+using Jt808TerminalEmulator.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace Jt808TerminalEmulator.Api
 {
@@ -28,6 +24,8 @@ namespace Jt808TerminalEmulator.Api
         {
             services.AddControllers();
             services.UseJt808TerminalEmulator();
+            services.UseServices();
+            services.AddDbContext<EmulatorDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,7 +35,7 @@ namespace Jt808TerminalEmulator.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.ApplicationServices.CreateScope().ServiceProvider.GetService<IDatabaseService>().InitAsync();
             app.UseHttpsRedirection();
 
             app.UseRouting();

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Bogus" Version="29.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Jt808TerminalEmulator.Data\Jt808TerminalEmulator.Data.csproj" />
+    <ProjectReference Include="..\Jt808TerminalEmulator.Interface\Jt808TerminalEmulator.Interface.csproj" />
+  </ItemGroup>
+
+</Project>

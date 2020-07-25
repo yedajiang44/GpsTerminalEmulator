@@ -5,12 +5,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3" />
+    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.21" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Jt808TerminalEmulator.Core\Jt808TerminalEmulator.Core.csproj" />
+    <ProjectReference Include="..\Jt808TerminalEmulator.Interface\Jt808TerminalEmulator.Interface.csproj" />
     <ProjectReference Include="..\Jt808TerminalEmulator.Model\Jt808TerminalEmulator.Model.csproj" />
+    <ProjectReference Include="..\Jt808TerminalEmulator.Service\Jt808TerminalEmulator.Service.csproj" />
   </ItemGroup>
 
 
