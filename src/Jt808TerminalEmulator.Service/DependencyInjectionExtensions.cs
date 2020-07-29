@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace Jt808TerminalEmulator.Service
     {
         public static IServiceCollection UseServices(this IServiceCollection services)
         {
+            services.AddAutoMapper(typeof(AutoMapperProfile));
             //通过反射，批量取出需要注入的接口和实现类
             var registrations =
                 from type in typeof(DependencyInjectionExtensions).Assembly.GetTypes()

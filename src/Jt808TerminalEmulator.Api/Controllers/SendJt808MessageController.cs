@@ -45,7 +45,12 @@ namespace Jt808TerminalEmulator.Api.Controllers
                     logger.LogError(e, "创建连接发生异常");
                 }
             }
-            return Ok(new JsonResultDto { Flag = true, Data = tcpClientManager.GetTcpClients().SelectMany(x => x.Sesions().Result), Message = $"耗时：{stopwatch.ElapsedMilliseconds}毫秒" });
+            return Ok(new JsonResultDto
+            {
+                Flag = true,
+                Data = tcpClientManager.GetTcpClients().SelectMany(x => x.Sesions().Result),
+                Message = $"耗时：{stopwatch.ElapsedMilliseconds}毫秒"
+            });
         }
     }
 }

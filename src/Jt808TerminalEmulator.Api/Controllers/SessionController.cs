@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Jt808TerminalEmulator.Core;
 using Jt808TerminalEmulator.Core.Abstract;
 using Jt808TerminalEmulator.Interface;
+using Jt808TerminalEmulator.Model.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,11 +30,18 @@ namespace Jt808TerminalEmulator.Api.Controllers
         {
             try
             {
-                return Ok(new { flag = true, data = tcpClientManager.GetTcpClients().SelectMany(x => x.Sesions().Result) });
+                return Ok(new JsonResultDto
+                {
+                    Flag = true,
+                    Data = tcpClientManager.GetTcpClients().SelectMany(x => x.Sesions().Result)
+                });
             }
             catch (Exception e)
             {
-                return Ok(new { flag = false, message = e.Message });
+                return Ok(new JsonResultDto
+                {
+                    Message = e.Message
+                });
             }
         }
     }

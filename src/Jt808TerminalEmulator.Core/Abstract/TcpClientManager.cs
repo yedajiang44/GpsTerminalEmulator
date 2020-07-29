@@ -16,9 +16,9 @@ namespace Jt808TerminalEmulator.Core.Abstract
             clients.AddOrUpdate(client.Id, client, (phoneNumber, _) => client);
         }
 
-        public ITcpClient GetTcpClient(string phoneNumber)
+        public ITcpClient GetTcpClient(string id)
         {
-            clients.TryGetValue(phoneNumber, out ITcpClient client);
+            clients.TryGetValue(id, out ITcpClient client);
             return client;
         }
 
@@ -28,7 +28,7 @@ namespace Jt808TerminalEmulator.Core.Abstract
     public interface ITcpClientManager
     {
         void Add(ITcpClient client);
-        ITcpClient GetTcpClient(string phoneNumber);
+        ITcpClient GetTcpClient(string id = "default");
         IEnumerable<ITcpClient> GetTcpClients();
     }
 }
