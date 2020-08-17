@@ -1,3 +1,4 @@
+using Jt808TerminalEmulator.Api.Configurations;
 using Jt808TerminalEmulator.Core;
 using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Service;
@@ -22,10 +23,14 @@ namespace Jt808TerminalEmulator.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-            services.UseJt808TerminalEmulator();
-            services.UseServices();
-            services.AddDbContext<EmulatorDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddJsonWebToken(Configuration)
+                .UseJt808TerminalEmulator()
+                .UseServices()
+                .AddDbContext<EmulatorDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")))
+#if debug
+                .AddCors(option => option.AddPolicy("cors", policy => policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins(new[] { "http://localhost:4200" })))
+#endif
+                .AddControllers().AddJsonDateTimeConverters();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,7 +45,10 @@ namespace Jt808TerminalEmulator.Api
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseCors("cors");
 
             app.UseEndpoints(endpoints =>
             {

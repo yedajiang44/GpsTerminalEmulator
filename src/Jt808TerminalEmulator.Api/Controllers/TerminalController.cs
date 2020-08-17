@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
-using Microsoft.AspNetCore.Http;
+using Jt808TerminalEmulator.Model.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Jt808TerminalEmulator.Api.Controllers
@@ -20,10 +17,86 @@ namespace Jt808TerminalEmulator.Api.Controllers
             this.terminalService = terminalService;
         }
 
-        [HttpGet("[action]")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Find(string id)
+        {
+            return Ok(new JsonResultDto { Flag = true, Data = await terminalService.Find(id) });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> FindAll()
+        {
+            return Ok(new JsonResultDto { Flag = true, Data = await terminalService.FindAll() });
+        }
+
+        [HttpGet("[action]/{count?}")]
         public async Task<IActionResult> Random(int count = 1)
         {
             return Ok(new JsonResultDto { Flag = true, Data = await terminalService.AddRandom(count) });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Add(TerminalDto dto)
+        {
+            var result = await terminalService.Add(dto);
+            return Ok(new JsonResultDto
+            {
+                Flag = true,
+                Data = result
+            });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var result = await terminalService.Delete(new string[] { id });
+            return Ok(new JsonResultDto
+            {
+                Flag = result,
+                Data = result,
+                Message = result ? null : "操作失败"
+            });
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromQuery] string[] ids)
+        {
+            var result = await terminalService.Delete(ids);
+            return Ok(new JsonResultDto
+            {
+                Flag = result,
+                Data = result,
+                Message = result ? null : "操作失败"
+            });
+        }
+
+        [HttpDelete("[action]")]
+        public async Task<IActionResult> DeleteAll()
+        {
+            var result = await terminalService.DeleteAll();
+            return Ok(new JsonResultDto
+            {
+                Flag = result,
+                Data = result,
+                Message = result ? null : "操作失败"
+            });
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update(TerminalDto dto)
+        {
+            await terminalService.Update(dto);
+            return Ok(new JsonResultDto
+            {
+                Flag = true,
+                Data = dto
+            });
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> Search([FromQuery] TerminalFilter filter)
+        {
+            return Ok(await terminalService.Search(filter));
         }
     }
 }
