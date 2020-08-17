@@ -27,10 +27,12 @@ namespace Jt808TerminalEmulator.Core.Netty.Codec
             {
                 try
                 {
+                    output.MarkWriterIndex();
                     output.WriteBytes(Unpooled.WrappedBuffer(packageConverter.Serialize(message)));
                 }
                 catch (Exception e)
                 {
+                    output.ResetWriterIndex();
                     if (logger.IsEnabled(LogLevel.Error))
                         logger.LogError(e, $"消息 {message.Header.MessageId:X2} 编码发生异常");
                 }

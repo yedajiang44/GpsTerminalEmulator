@@ -18,19 +18,18 @@ namespace Jt808TerminalEmulator.Core.Netty.Codec
         }
         protected override void Decode(IChannelHandlerContext context, IByteBuffer input, List<object> output)
         {
-            if (input.Capacity >= 12)
+            if (input.ReadableBytes >= 12)
             {
-                byte[] buffer = new byte[input.Capacity + 2];
-                input.ReadBytes(buffer, 1, input.Capacity);
+                byte[] buffer = new byte[input.ReadableBytes + 2];
+                input.ReadBytes(buffer, 1, input.ReadableBytes);
                 buffer[0] = 0x7e;
-                buffer[input.Capacity + 1] = 0x7e;
+                buffer[input.ReaderIndex-input.ReadableBytes + 1] = 0x7e;
                 output.Add(buffer);
             }
             else
             {
-                input.SetReaderIndex(int.MaxValue);
                 if (logger.IsEnabled(LogLevel.Error))
-                    logger.LogError($"收到无效数据包：{input.ReadBytes(input.Capacity).Array.ToHexString()}");
+                    logger.LogError($"收到无效数据包：{input.ReadBytes(input.ReadableBytes).Array.ToHexString()}");
             }
         }
     }
