@@ -7,6 +7,7 @@ using GpsPlatform.Jt808Protocol.Instruction;
 using GpsPlatform.Jt808Protocol.PackageInfo;
 using Jt808TerminalEmulator.Core;
 using Jt808TerminalEmulator.Core.Abstract;
+using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -19,32 +20,24 @@ namespace Jt808TerminalEmulator.Api.Controllers
     {
         private readonly ITcpClientFactory tcpClientFactory;
         private readonly ITcpClientManager tcpClientManager;
+        private readonly ITerminalService terminalService;
         private readonly ILogger logger;
 
-        public SendJt808MessageController(ITcpClientFactory tcpClientFactory, ITcpClientManager tcpClientManager, ILogger<SendJt808MessageController> logger)
+        public SendJt808MessageController(ITcpClientFactory tcpClientFactory, ITcpClientManager tcpClientManager, ITerminalService terminalService, ILogger<SendJt808MessageController> logger)
         {
             this.tcpClientFactory = tcpClientFactory;
             this.tcpClientManager = tcpClientManager;
+            this.terminalService = terminalService;
             this.logger = logger;
         }
 
         [HttpGet]
-        public async Task<IActionResult> IndexAsync(string phoneNumber = "13800138000")
+        public async Task<IActionResult> IndexAsync(string ip, int port)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var client = await tcpClientFactory.CreateTcpClient($"{phoneNumber}");
-            for (int index = 0; index < 5000; index++)
-            {
-                try
-                {
-                    await client.ConnectAsync("127.0.0.1", 2012, $"{index}");
-                }
-                catch (Exception e)
-                {
-                    logger.LogError(e, "创建连接发生异常");
-                }
-            }
+            var client = await tcpClientFactory.CreateTcpClient();
+            Parallel.ForEach(await terminalService.FindAll(), x => client.ConnectAsync(ip, port, x.Sim));
             return Ok(new JsonResultDto
             {
                 Flag = true,

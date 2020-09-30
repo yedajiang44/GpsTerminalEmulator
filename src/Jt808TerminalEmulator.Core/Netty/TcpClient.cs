@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Jt808TerminalEmulator.Core.Netty
@@ -48,7 +49,7 @@ namespace Jt808TerminalEmulator.Core.Netty
 
         public Task<ISession> ConnectAsync(string ip, int port, string phoneNumber = null)
         {
-            return bootstrap.ConnectAsync(ip, port).ContinueWith(task =>
+            return bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(ip), port)).ContinueWith(task =>
             {
                 ISession session = new Session { Channel = task.Result, PhoneNumber = phoneNumber };
                 sessionManager.Add(session);

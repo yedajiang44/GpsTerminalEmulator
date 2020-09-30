@@ -44,5 +44,24 @@ namespace Jt808TerminalEmulator.Api.Controllers
                 });
             }
         }
+        [HttpGet("[action]")]
+        public IActionResult Count()
+        {
+            try
+            {
+                return Ok(new JsonResultDto
+                {
+                    Flag = true,
+                    Data = tcpClientManager.GetTcpClients().SelectMany(x => x.Sesions().Result).Count()
+                });
+            }
+            catch (Exception e)
+            {
+                return Ok(new JsonResultDto
+                {
+                    Message = e.Message
+                });
+            }
+        }
     }
 }
