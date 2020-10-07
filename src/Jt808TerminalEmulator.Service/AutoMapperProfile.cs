@@ -11,6 +11,7 @@ namespace Jt808TerminalEmulator.Service
     {
         public AutoMapperProfile()
         {
+            CreateMap(typeof(PageResultDto<>), typeof(PageResultDto<>));
             CreateMap<TerminalDto, TerminalEntity>().ReverseMap();
         }
     }

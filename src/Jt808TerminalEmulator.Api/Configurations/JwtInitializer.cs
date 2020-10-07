@@ -20,12 +20,12 @@ namespace Jt808TerminalEmulator.Api.Configurations
         /// <param name="Configuration"></param>
         public static IServiceCollection AddJsonWebToken(this IServiceCollection services, IConfiguration Configuration)
         {
+            services.AddScoped<JwtSettings>();
             //将appsettings.json中的JwtSettings部分文件读取到JwtSettings中，这是给其他地方用的
             services.Configure<JwtSettings>(Configuration.GetSection("JwtSettings"));
 
-            //由于初始化的时候我们就需要用，所以使用Bind的方式读取配置
             //将配置绑定到JwtSettings实例中
-            var jwtSettings = new JwtSettings();
+            var jwtSettings = services.BuildServiceProvider().GetRequiredService<JwtSettings>();
             Configuration.Bind("JwtSettings", jwtSettings);
 
             services.AddAuthentication(x =>

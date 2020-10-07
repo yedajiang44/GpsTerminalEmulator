@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jt808TerminalEmulator.Core;
 using Jt808TerminalEmulator.Core.Abstract;
+using Jt808TerminalEmulator.Core.Netty;
 using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Jt808TerminalEmulator.Api.Controllers
@@ -30,7 +30,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         {
             try
             {
-                return Ok(new JsonResultDto
+                return Ok(new JsonResultDto<IEnumerable<ISession>>
                 {
                     Flag = true,
                     Data = tcpClientManager.GetTcpClients().SelectMany(x => x.Sesions().Result)
@@ -38,7 +38,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
             }
             catch (Exception e)
             {
-                return Ok(new JsonResultDto
+                return Ok(new JsonResultDto<IEnumerable<ISession>>
                 {
                     Message = e.Message
                 });
@@ -49,7 +49,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         {
             try
             {
-                return Ok(new JsonResultDto
+                return Ok(new JsonResultDto<long>
                 {
                     Flag = true,
                     Data = tcpClientManager.GetTcpClients().SelectMany(x => x.Sesions().Result).Count()
@@ -57,7 +57,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
             }
             catch (Exception e)
             {
-                return Ok(new JsonResultDto
+                return Ok(new JsonResultDto<long>
                 {
                     Message = e.Message
                 });

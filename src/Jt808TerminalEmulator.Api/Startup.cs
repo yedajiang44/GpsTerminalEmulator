@@ -40,7 +40,7 @@ namespace Jt808TerminalEmulator.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.ApplicationServices.CreateScope().ServiceProvider.GetService<IDatabaseService>().InitAsync();
+            app.ApplicationServices.CreateScope().ServiceProvider.GetService<IDatabaseService>().InitAsync().Wait();
             app.UseHttpsRedirection();
 
             app.UseRouting();

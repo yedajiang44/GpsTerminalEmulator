@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -7,6 +8,7 @@ using GpsPlatform.Jt808Protocol.Instruction;
 using GpsPlatform.Jt808Protocol.PackageInfo;
 using Jt808TerminalEmulator.Core;
 using Jt808TerminalEmulator.Core.Abstract;
+using Jt808TerminalEmulator.Core.Netty;
 using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +40,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
             stopwatch.Start();
             var client = await tcpClientFactory.CreateTcpClient();
             Parallel.ForEach(await terminalService.FindAll(), x => client.ConnectAsync(ip, port, x.Sim));
-            return Ok(new JsonResultDto
+            return Ok(new JsonResultDto<IEnumerable<ISession>>
             {
                 Flag = true,
                 Data = tcpClientManager.GetTcpClients().SelectMany(x => x.Sesions().Result),

@@ -77,9 +77,9 @@ namespace Jt808TerminalEmulator.Api.Controllers
             }
             else
             {
-                return Ok(new JsonResultDto { Flag = false, Message = "账号或密码错误" });
+                return Ok(new JsonResultDto<UserLoginDto> { Flag = false, Message = "账号或密码错误" });
             }
-            return Ok(new JsonResultDto { Flag = true, Data = userLoginDto });
+            return Ok(new JsonResultDto<UserLoginDto> { Flag = true, Data = userLoginDto });
         }
     }
 }

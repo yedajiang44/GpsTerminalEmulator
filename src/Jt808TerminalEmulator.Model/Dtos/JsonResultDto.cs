@@ -4,10 +4,10 @@ using System.Text;
 
 namespace Jt808TerminalEmulator.Model.Dtos
 {
-    public class JsonResultDto
+    public class JsonResultDto<T>
     {
-        public bool Flag { get; set; }
-        public dynamic Data { get; set; }
+        public bool Flag { get; set; } = true;
+        public T Data { get; set; } = default;
         public string Message { get; set; }
     }
 }
