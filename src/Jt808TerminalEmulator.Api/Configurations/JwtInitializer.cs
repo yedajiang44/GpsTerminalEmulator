@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
@@ -20,20 +21,14 @@ namespace Jt808TerminalEmulator.Api.Configurations
         /// <param name="Configuration"></param>
         public static IServiceCollection AddJsonWebToken(this IServiceCollection services, IConfiguration Configuration)
         {
-            services.AddScoped<JwtSettings>();
-            //将appsettings.json中的JwtSettings部分文件读取到JwtSettings中，这是给其他地方用的
             services.Configure<JwtSettings>(Configuration.GetSection("JwtSettings"));
-
-            //将配置绑定到JwtSettings实例中
-            var jwtSettings = services.BuildServiceProvider().GetRequiredService<JwtSettings>();
-            Configuration.Bind("JwtSettings", jwtSettings);
-
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(cfg =>
             {
+                var jwtSettings = services.BuildServiceProvider().GetRequiredService<IOptionsMonitor<JwtSettings>>().CurrentValue;
 #if Debug
                 cfg.RequireHttpsMetadata = false;
 #endif
