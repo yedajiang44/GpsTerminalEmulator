@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Z.EntityFramework.Plus;
 
 namespace Jt808TerminalEmulator.Service
 {
@@ -47,17 +48,12 @@ namespace Jt808TerminalEmulator.Service
 
         public async Task<bool> Delete(string[] ids)
         {
-            foreach (var item in ids.Select(x => new TerminalEntity { Id = x }))
-            {
-                dbContext.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
-            };
-            return await dbContext.SaveChangesAsync() > 0;
+            return await dbContext.Set<TerminalEntity>().Where(x => ids.Contains(x.Id)).DeleteAsync() > 0;
         }
 
         public async Task<bool> DeleteAll()
         {
-            dbContext.RemoveRange(dbContext.Set<TerminalEntity>());
-            return await dbContext.SaveChangesAsync() > 0;
+            return await dbContext.Set<TerminalEntity>().DeleteAsync() > 0;
         }
 
         public Task<TerminalDto> Find(string id)
@@ -81,15 +77,12 @@ namespace Jt808TerminalEmulator.Service
 
         public Task<PageResultDto<TerminalDto>> Search(TerminalFilter filter)
         {
-            var query = dbContext.Set<TerminalEntity>()
+            return dbContext.Set<TerminalEntity>()
                 .WhereIf(!string.IsNullOrEmpty(filter.Sim), x => x.Sim.Contains(filter.Sim))
                 .WhereIf(!string.IsNullOrEmpty(filter.LicensePlate), x => x.LicensePlate.Contains(filter.LicensePlate))
-                .OrderByDescending(x => x.CreateDateTime);
-            return Task.FromResult(new PageResultDto<TerminalDto>
-            {
-                List = mapper.Map<IEnumerable<TerminalDto>>(query.Skip((filter.Index - 1) * filter.Size).Take(filter.Size).ToList()),
-                Total = query.Count()
-            });
+                .OrderByDescending(x => x.CreateDateTime)
+                .PagingAsync(filter.Index, filter.Size)
+                .Mapper(x => mapper.Map<PageResultDto<TerminalDto>>(x));
         }
     }
 }

@@ -15,5 +15,10 @@ namespace Jt808TerminalEmulator.Model.Filters
         /// 每页长度
         /// </summary>
         public int Size { get; set; }
+
+        /// <summary>
+        /// 排序表达式
+        /// </summary>
+        public string Sort { get; set; }
     }
 }

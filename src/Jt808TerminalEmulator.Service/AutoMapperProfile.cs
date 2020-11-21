@@ -12,7 +12,25 @@ namespace Jt808TerminalEmulator.Service
         public AutoMapperProfile()
         {
             CreateMap(typeof(PageResultDto<>), typeof(PageResultDto<>));
-            CreateMap<TerminalDto, TerminalEntity>().ReverseMap();
+            CreateMap<TerminalDto, TerminalEntity>()
+                .AfterMap((dto, entity) =>
+                {
+                    if (string.IsNullOrEmpty(entity.Id)) entity.Init();
+                })
+                .ReverseMap();
+            CreateMap<LineDto, LineEntity>()
+                .AfterMap((dto, entity) =>
+                {
+                    if (string.IsNullOrEmpty(entity.Id)) entity.Init();
+                    entity.LocationCount = entity.Locations.Count;
+                })
+                .ReverseMap();
+            CreateMap<LocationDto, LocationEntity>()
+                .AfterMap((dto, entity) =>
+                {
+                    if (string.IsNullOrEmpty(entity.Id)) entity.Init();
+                })
+                .ReverseMap();
         }
     }
 }
