@@ -34,7 +34,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var result = await lineService.Delete(new string[] { id }) > 0;
+            var result = await lineService.Delete(x => x.Id == id) > 0;
             return Ok(new JsonResultDto<bool>
             {
                 Data = result,
@@ -45,7 +45,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete([FromQuery] string[] ids)
         {
-            var result = await lineService.Delete(ids) > 0;
+            var result = await lineService.Delete(x => ids.Contains(x.Id)) > 0;
             return Ok(new JsonResultDto<bool>
             {
                 Data = result,
@@ -66,7 +66,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> Search([FromQuery] LineFilter filter)
         {
-            return Ok(await lineService.Search(filter));
+            return Ok(await lineService.QueryWithPage(filter));
         }
     }
 }

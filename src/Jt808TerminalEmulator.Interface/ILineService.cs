@@ -7,12 +7,7 @@ using System.Threading.Tasks;
 
 namespace Jt808TerminalEmulator.Interface
 {
-    public interface ILineService
+    public interface ILineService : IBaseService<LineDto>
     {
-        Task<int> Add(LineDto dto);
-        Task<int> Delete(string[] ids);
-        Task<int> Update(LineDto dto);
-        Task<LineDto> Fine(string id);
-        Task<PageResultDto<LineDto>> Search(LineFilter filter);
     }
 }

@@ -11,6 +11,7 @@ using Jt808TerminalEmulator.Core.Abstract;
 using Jt808TerminalEmulator.Core.Netty;
 using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
+using Jt808TerminalEmulator.Model.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -39,7 +40,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             var client = await tcpClientFactory.CreateTcpClient();
-            Parallel.ForEach(await terminalService.FindAll(), x => client.ConnectAsync(ip, port, x.Sim));
+            Parallel.ForEach(await terminalService.Query<TerminalFilter>(), x => client.ConnectAsync(ip, port, x.Sim));
             return Ok(new JsonResultDto<IEnumerable<ISession>>
             {
                 Flag = true,

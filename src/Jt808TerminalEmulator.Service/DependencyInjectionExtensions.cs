@@ -1,10 +1,7 @@
 ﻿using AutoMapper;
-using Microsoft.Extensions.Configuration;
+using Jt808TerminalEmulator.Repository.UnitOfWork;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Jt808TerminalEmulator.Service
 {
@@ -13,17 +10,21 @@ namespace Jt808TerminalEmulator.Service
         public static IServiceCollection UseServices(this IServiceCollection services)
         {
             services.AddAutoMapper(typeof(AutoMapperProfile));
-            //通过反射，批量取出需要注入的接口和实现类
-            var registrations =
-                from type in typeof(DependencyInjectionExtensions).Assembly.GetTypes()
-                where type.Namespace != null && (type.Namespace.StartsWith("Jt808TerminalEmulator.Service") &&
-                                               type.GetInterfaces().Any(x => x.Name.EndsWith("Service")) &&
-                                               type.GetInterfaces().Any())
-                select new { Service = type.GetInterfaces().First(), Implementation = type };
-
-            foreach (var t in registrations)
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            foreach (var x in typeof(UnitOfWork).Assembly.GetTypes().Where(x => !x.IsInterface && x.Namespace.StartsWith("Jt808TerminalEmulator.Repository.Repositorys")).Select(x => new { Implementation = x, Services = x.GetInterfaces() }))
             {
-                services.AddScoped(t.Service, t.Implementation);
+                foreach (var service in x.Services)
+                {
+                    services.AddScoped(service, x.Implementation);
+                }
+            };
+            //通过反射，批量取出需要注入的接口和实现类
+            foreach (var x in typeof(DependencyInjectionExtensions).Assembly.GetTypes().Where(x => x.Namespace != null && x.Namespace.StartsWith("Jt808TerminalEmulator.Servic") && x.GetInterfaces().Any(x => x.Name.EndsWith("Service"))).Select(x => new { Implementation = x, Services = x.GetInterfaces() }))
+            {
+                foreach (var service in x.Services)
+                {
+                    services.AddScoped(service, x.Implementation);
+                }
             }
             return services;
         }

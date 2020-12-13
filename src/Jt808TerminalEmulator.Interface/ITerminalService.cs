@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Jt808TerminalEmulator.Interface
 {
-    public interface ITerminalService
+    public interface ITerminalService:IBaseService<TerminalDto>
     {
         /// <summary>
         /// 随机生成模型
@@ -15,12 +15,5 @@ namespace Jt808TerminalEmulator.Interface
         /// <param name="count"></param>
         /// <returns></returns>
         Task<int> AddRandom(int count);
-        Task<bool> Add(TerminalDto dto);
-        Task<bool> Delete(string[] ids);
-        Task<bool> DeleteAll();
-        Task Update(TerminalDto dto);
-        Task<TerminalDto> Find(string id);
-        Task<IList<TerminalDto>> FindAll();
-        Task<PageResultDto<TerminalDto>> Search(TerminalFilter filter);
     }
 }

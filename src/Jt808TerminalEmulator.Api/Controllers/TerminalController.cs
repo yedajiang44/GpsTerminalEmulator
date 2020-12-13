@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
@@ -21,13 +22,13 @@ namespace Jt808TerminalEmulator.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Find(string id)
         {
-            return Ok(new JsonResultDto<TerminalDto> { Data = await terminalService.Find(id) });
+            return Ok(new JsonResultDto<TerminalDto> { Data = await terminalService.Find(x => x.Id == id) });
         }
 
         [HttpGet]
         public async Task<IActionResult> FindAll()
         {
-            return Ok(new JsonResultDto<IList<TerminalDto>> { Data = await terminalService.FindAll() });
+            return Ok(new JsonResultDto<IList<TerminalDto>> { Data = await terminalService.Query<TerminalFilter>() });
         }
 
         [HttpGet("[action]/{count?}")]
@@ -39,7 +40,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(TerminalDto dto)
         {
-            var result = await terminalService.Add(dto);
+            var result = await terminalService.Add(dto) > 0;
             return Ok(new JsonResultDto<bool>
             {
                 Data = result,
@@ -50,7 +51,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var result = await terminalService.Delete(new string[] { id });
+            var result = await terminalService.Delete(x => x.Id == id) > 0;
             return Ok(new JsonResultDto<bool>
             {
                 Data = result,
@@ -61,7 +62,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete([FromQuery] string[] ids)
         {
-            var result = await terminalService.Delete(ids);
+            var result = await terminalService.Delete(x => ids.Contains(x.Id)) > 0;
             return Ok(new JsonResultDto<bool>
             {
                 Data = result,
@@ -72,7 +73,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         [HttpDelete("[action]")]
         public async Task<IActionResult> DeleteAll()
         {
-            var result = await terminalService.DeleteAll();
+            var result = await terminalService.Delete(x => true) > 0;
             return Ok(new JsonResultDto<bool>
             {
                 Data = result,
@@ -93,7 +94,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> Search([FromQuery] TerminalFilter filter)
         {
-            return Ok(await terminalService.Search(filter));
+            return Ok(await terminalService.QueryWithPage(filter));
         }
     }
 }
