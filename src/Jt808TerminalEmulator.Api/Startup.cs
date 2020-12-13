@@ -26,9 +26,10 @@ namespace Jt808TerminalEmulator.Api
             services.AddJsonWebToken(Configuration)
                 .UseJt808TerminalEmulator()
                 .UseServices()
-                .AddDbContext<EmulatorDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new System.Version())))
+                // .AddDbContext<EmulatorDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new System.Version())))
+                .AddDbContext<EmulatorDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")))
 #if debug
-                .AddCors(option => option.AddPolicy("cors", policy => policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins(new[] { "http://localhost:4200" })))
+                // .AddCors(option => option.AddPolicy("cors", policy => policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins(new[] { "http://localhost:4200" })))
 #endif
                 .AddControllers().AddJsonDateTimeConverters();
         }
