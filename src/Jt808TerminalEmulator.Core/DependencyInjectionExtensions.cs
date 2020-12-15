@@ -15,10 +15,11 @@ namespace Jt808TerminalEmulator.Core
     {
         public static IServiceCollection UseJt808TerminalEmulator(this IServiceCollection services)
         {
-            return services.AddSingleton<PackageConverter>()
+            return services.AddSingleton<IPackageConverter>()
                 .AddSingleton<ITcpClientManager, TcpClientManager>()
                 .AddSingleton<ISessionManager, SessionManager>()
                 .AddSingleton<ITcpClientFactory, TcpClientFactory>()
+                .AddSingleton<IPackageConverter, DefaultIPackageConverter>()
                 .AddScoped<ITcpClient, TcpClient>()
                 .AddScoped<Jt808TcpHandler>()
                 .AddScoped<Jt808Decoder>()

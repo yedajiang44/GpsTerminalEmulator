@@ -1,21 +1,19 @@
 ﻿using DotNetty.Buffers;
 using DotNetty.Codecs;
 using DotNetty.Transport.Channels;
-using GpsPlatform.Jt808Protocol;
 using GpsPlatform.Jt808Protocol.PackageInfo;
+using Jt808TerminalEmulator.Core.Abstract;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Jt808TerminalEmulator.Core.Netty.Codec
 {
     internal class Jt808Encoder : MessageToByteEncoder<Jt808PackageInfo>
     {
         readonly ILogger logger;
-        readonly PackageConverter packageConverter;
+        readonly IPackageConverter packageConverter;
 
-        public Jt808Encoder(ILogger<Jt808Encoder> logger, PackageConverter packageConverter)
+        public Jt808Encoder(ILogger<Jt808Encoder> logger, IPackageConverter packageConverter)
         {
             this.logger = logger;
             this.packageConverter = packageConverter;

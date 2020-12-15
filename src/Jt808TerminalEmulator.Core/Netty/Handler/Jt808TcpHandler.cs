@@ -17,10 +17,10 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
     internal class Jt808TcpHandler : SimpleChannelInboundHandler<byte[]>
     {
         private readonly ILogger logger;
-        private readonly PackageConverter packageConverter;
+        private readonly IPackageConverter packageConverter;
         private readonly ISessionManager sessionManager;
 
-        public Jt808TcpHandler(ILogger<Jt808TcpHandler> logger, PackageConverter packageConverter, ISessionManager sessionManager)
+        public Jt808TcpHandler(ILogger<Jt808TcpHandler> logger, IPackageConverter packageConverter, ISessionManager sessionManager)
         {
             this.logger = logger;
             this.packageConverter = packageConverter;
@@ -31,7 +31,7 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
         {
             try
             {
-                var package = packageConverter.Deserialize(msg);
+                var package = packageConverter.Deserialize<Jt808PackageInfo>(msg);
                 if (logger.IsEnabled(LogLevel.Trace))
                     logger.LogTrace($"解析成功--->卡号：{package.Header.PhoneNumber} ，消息：{msg.ToHexString()}");
 
