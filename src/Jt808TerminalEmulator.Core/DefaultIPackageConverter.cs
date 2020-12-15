@@ -15,14 +15,8 @@ namespace Jt808TerminalEmulator.Core
         {
             this.packageConverter = packageConverter;
         }
-        public T Deserialize<T>(byte[] buffer) where T : class
-        {
-            throw new System.NotImplementedException();
-        }
+        public T Deserialize<T>(byte[] buffer) where T : class => packageConverter.Deserialize(buffer) as T;
 
-        public byte[] Serialize<T>(T package) where T : class
-        {
-            throw new System.NotImplementedException();
-        }
+        public byte[] Serialize<T>(T package) where T : class => packageConverter.Serialize(package as Jt808PackageInfo);
     }
 }
