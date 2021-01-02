@@ -37,5 +37,9 @@ namespace Jt808TerminalEmulator.Data.Entity
         /// 定位点
         /// </summary>
         public IList<LocationEntity> Locations { get; set; }
+        /// <summary>
+        /// 任务
+        /// </summary>
+        public TaskEntity Task { get; set; }
     }
 }

@@ -31,6 +31,12 @@ namespace Jt808TerminalEmulator.Service
                     if (string.IsNullOrEmpty(entity.Id)) entity.Init();
                 })
                 .ReverseMap();
+            CreateMap<TaskDto, TaskEntity>()
+                .AfterMap((dto, entity) =>
+                {
+                    if (string.IsNullOrEmpty(entity.Id)) entity.Init();
+                }).ReverseMap()
+                .ForMember(x => x.LineName, m => m.MapFrom(x => x.Line.Name));
         }
     }
 }

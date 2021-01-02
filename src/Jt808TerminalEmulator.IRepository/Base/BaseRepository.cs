@@ -52,7 +52,7 @@ namespace Jt808TerminalEmulator.Repository.Base
 
         public async Task<List<T>> Query(List<(bool ifExpression, Expression<Func<T, bool>> whereExpression)> whereLambdas = null, string order = null)
         {
-            var query = dbContext.Set<T>().AsQueryable();
+            var query = BaseQuery();
             whereLambdas?.ForEach(x =>
             {
                 query = query.WhereIf(x.ifExpression, x.whereExpression);
@@ -62,7 +62,7 @@ namespace Jt808TerminalEmulator.Repository.Base
 
         public async Task<Tuple<List<T>, int>> QueryWithPage(List<(bool ifExpression, Expression<Func<T, bool>> whereExpression)> whereLambdas, int pageIndex, int pageSize, string order)
         {
-            var query = dbContext.Set<T>().AsQueryable();
+            var query = BaseQuery();
             whereLambdas?.ForEach(x =>
             {
                 query = query.WhereIf(x.ifExpression, x.whereExpression);
@@ -76,5 +76,7 @@ namespace Jt808TerminalEmulator.Repository.Base
                                       .Take(pageSize).ToListAsync();
             return new Tuple<List<T>, int>(entities, total);
         }
+
+        public virtual IQueryable<T> BaseQuery()=>dbContext.Set<T>().AsQueryable();
     }
 }

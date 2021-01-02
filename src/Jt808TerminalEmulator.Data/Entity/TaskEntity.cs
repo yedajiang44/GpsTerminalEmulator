@@ -15,5 +15,20 @@ namespace Jt808TerminalEmulator.Data.Entity
         /// 状态
         /// </summary>
         public int Status { get; set; }
+
+        /// <summary>
+        /// 终端
+        /// </summary>
+        public IList<TerminalEntity> Terminals { get; set; }
+
+        /// <summary>
+        /// 线路主键
+        /// </summary>
+        public string LineId { get; set; }
+
+        /// <summary>
+        /// 线路
+        /// </summary>
+        public LineEntity Line { get; set; }
     }
 }

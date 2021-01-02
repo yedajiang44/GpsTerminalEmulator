@@ -8,5 +8,6 @@ namespace Jt808TerminalEmulator.Data.Entity
     {
         public string Sim { get; set; }
         public string LicensePlate { get; set; }
+        public IList<TaskEntity> Tasks { get; set; }
     }
 }

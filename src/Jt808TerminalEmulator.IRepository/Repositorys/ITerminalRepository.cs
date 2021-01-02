@@ -29,6 +29,7 @@ namespace Jt808TerminalEmulator.Repository.Repositorys
                 .RuleFor(x => x.CreateDateTime, x => x.Date.Past())
                 .RuleFor(x => x.LicensePlate, x => x.Random.Replace("??#####"))
                 .RuleFor(x => x.Sim, x => x.Phone.PhoneNumber("###########"))
+                .Ignore(x => x.Tasks)
                 .Generate(count);
             return dbContext.AddRangeAsync(entitys);
         }
