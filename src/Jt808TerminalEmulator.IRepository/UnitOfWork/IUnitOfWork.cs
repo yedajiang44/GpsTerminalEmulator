@@ -7,8 +7,6 @@ namespace Jt808TerminalEmulator.Repository.UnitOfWork
 {
     public interface IUnitOfWork
     {
-        EmulatorDbContext GetDbContext();
-
         Task<int> SaveChangesAsync();
     }
 }
