@@ -20,14 +20,14 @@ namespace Jt808TerminalEmulator.Repository.Base
             this.dbContext = dbContext;
         }
 
-        public async ValueTask<EntityEntry<T>> Add(T entity)
+        public ValueTask<EntityEntry<T>> Add(T entity)
         {
-            return await dbContext.Set<T>().AddAsync(entity);
+            return dbContext.Set<T>().AddAsync(entity);
         }
 
-        public Task<int> Update(T entity)
+        public void Update(T entity)
         {
-            return dbContext.Set<T>().UpdateAsync(x=>entity);
+            dbContext.Update(entity);
         }
 
         public async Task<int> Update(Expression<Func<T, bool>> whereLambda, Expression<Func<T, T>> entity)
@@ -77,6 +77,6 @@ namespace Jt808TerminalEmulator.Repository.Base
             return new Tuple<List<T>, int>(entities, total);
         }
 
-        public virtual IQueryable<T> BaseQuery()=>dbContext.Set<T>().AsQueryable();
+        public virtual IQueryable<T> BaseQuery() => dbContext.Set<T>().AsQueryable();
     }
 }

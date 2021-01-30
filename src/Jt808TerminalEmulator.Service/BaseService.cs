@@ -41,7 +41,8 @@ namespace Jt808TerminalEmulator.Service
 
         public Task<int> Update(TDto dto)
         {
-            return currentRepository.Update(mapper.Map<TEntity>(dto));
+            currentRepository.Update(mapper.Map<TEntity>(dto));
+            return unitOfWork.SaveChangesAsync();
         }
 
         public Task<int> Update(Expression<Func<TDto, bool>> whereLambda, Expression<Func<TDto, TDto>> dto)

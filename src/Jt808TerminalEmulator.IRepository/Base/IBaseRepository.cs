@@ -13,7 +13,7 @@ namespace Jt808TerminalEmulator.Repository.Base
     {
         ValueTask<EntityEntry<T>> Add(T entity);
 
-        Task<int> Update(T entity);
+        void Update(T entity);
 
         Task<int> Update(Expression<Func<T, bool>> whereLambda, Expression<Func<T, T>> entity);
 
