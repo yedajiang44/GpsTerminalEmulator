@@ -140,9 +140,9 @@ namespace Jt808TerminalEmulator.Core
             return locations;
         }
 
-        public static List<LocationDto> Reinterpolation(LineDto dto, out double alldistance)
+        public static List<LocationDto> Reinterpolation(LineDto dto, double speed, int interval, out double alldistance)
         {
-            var intervalDistance = dto.Speed / 3600 * dto.Interval;
+            var intervalDistance = speed / 3600 * interval;
             alldistance = 0d;
             var locations = new List<LocationDto>
             {

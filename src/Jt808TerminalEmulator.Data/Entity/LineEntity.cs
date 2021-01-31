@@ -21,15 +21,6 @@ namespace Jt808TerminalEmulator.Data.Entity
         /// 基准点数量
         /// </summary>
         public int LocationCount { get; set; }
-        /// <summary>
-        /// 定位上报间隔，单位：秒
-        /// </summary>
-        public int Interval { get; set; }
-        /// <summary>
-        /// 速度，单位：千米/小时
-        /// </summary>
-        public double Speed { get; set; }
-        /// <summary>
         /// 备注
         /// </summary>
         public string Note { get; set; }
