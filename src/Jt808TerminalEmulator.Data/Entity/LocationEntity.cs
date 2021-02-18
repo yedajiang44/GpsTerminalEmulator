@@ -10,6 +10,11 @@ namespace Jt808TerminalEmulator.Data.Entity
     public class LocationEntity : BaseEntity
     {
         /// <summary>
+        /// 排序
+        /// </summary>
+        public int Order { get; set; }
+        
+        /// <summary>
         /// 经度
         /// </summary>
         public double Logintude { get; set; }

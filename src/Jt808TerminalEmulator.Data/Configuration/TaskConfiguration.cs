@@ -10,7 +10,6 @@ namespace Jt808TerminalEmulator.Data.Configuration
         {
             base.Configure(builder);
             builder.ToTable("Task");
-            builder.HasOne(x => x.Line).WithOne(x => x.Task).HasForeignKey<TaskEntity>(x => x.LineId).IsRequired();
             builder.HasMany(x => x.Terminals).WithMany(x => x.Tasks).UsingEntity(x=>x.ToTable("TaskTerminals"));
         }
     }

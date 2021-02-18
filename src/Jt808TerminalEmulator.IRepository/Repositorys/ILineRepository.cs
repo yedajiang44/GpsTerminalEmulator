@@ -1,8 +1,7 @@
 ﻿using Jt808TerminalEmulator.Data.Entity;
 using Jt808TerminalEmulator.Repository.Base;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace Jt808TerminalEmulator.Repository.Repositorys
 {
@@ -12,5 +11,6 @@ namespace Jt808TerminalEmulator.Repository.Repositorys
         public LineRepository(EmulatorDbContext dbContext) : base(dbContext)
         {
         }
+        public override IQueryable<LineEntity> BaseQuery() => dbContext.Set<LineEntity>().Include(x => x.Locations);
     }
 }

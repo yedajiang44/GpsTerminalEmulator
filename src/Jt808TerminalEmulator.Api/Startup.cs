@@ -1,6 +1,8 @@
 using Jt808TerminalEmulator.Api.Configurations;
 using Jt808TerminalEmulator.Core;
+using Jt808TerminalEmulator.Core.Netty;
 using Jt808TerminalEmulator.Interface;
+using Jt808TerminalEmulator.Model.Filters;
 using Jt808TerminalEmulator.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 
 namespace Jt808TerminalEmulator.Api
 {
@@ -26,12 +30,19 @@ namespace Jt808TerminalEmulator.Api
             services.AddJsonWebToken(Configuration)
                 .UseJt808TerminalEmulator()
                 .UseServices()
-                // .AddDbContext<EmulatorDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new System.Version())))
+                .AddLogging(logger => logger.ClearProviders().AddNLog(new NLogLoggingConfiguration(Configuration.GetSection("NLog"))))
                 .AddDbContext<EmulatorDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")))
-#if debug
-                // .AddCors(option => option.AddPolicy("cors", policy => policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins(new[] { "http://localhost:4200" })))
-#endif
-                .AddControllers().AddJsonDateTimeConverters();
+                // .AddAuthorization(options =>
+                // {
+                //     options.AddPolicy("Client", policy => policy.RequireRole("Client").Build());
+                //     options.AddPolicy("Admin", policy => policy.RequireRole("Admin").Build());
+                //     //这个是并的关系
+                //     options.AddPolicy("AdminAndClient", policy => policy.RequireRole("Admin,Client").Build());
+                //     //这个是或的关系
+                //     options.AddPolicy("SystemOrAdmin", policy => policy.RequireRole("Admin", "System").Build());
+                // })
+                .AddControllers()
+                .AddJsonDateTimeConverters();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,7 +52,12 @@ namespace Jt808TerminalEmulator.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.ApplicationServices.CreateScope().ServiceProvider.GetService<IDatabaseService>().InitAsync().Wait();
+            var services = app.ApplicationServices.CreateScope().ServiceProvider;
+            services.GetService<IDatabaseService>().InitAsync().Wait();
+            var lines = services.GetRequiredService<ILineService>().Query<LineFilter>().Result;
+            LineManager.ResetLine(lines);
+
+            Jt808TerminalEmulator.Core.DependencyInjectionExtensions.ServiceProvider = app.ApplicationServices;
             app.UseHttpsRedirection();
 
             app.UseRouting();

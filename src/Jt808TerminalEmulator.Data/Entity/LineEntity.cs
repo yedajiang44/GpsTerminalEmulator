@@ -31,6 +31,6 @@ namespace Jt808TerminalEmulator.Data.Entity
         /// <summary>
         /// 任务
         /// </summary>
-        public TaskEntity Task { get; set; }
+        public IList<TaskEntity> Tasks { get; set; }
     }
 }

@@ -33,6 +33,8 @@ namespace Jt808TerminalEmulator.Core.Netty
             bootstrap = new Bootstrap().Group(eventLoopGroup)
                 .Channel<TcpSocketChannel>()
                 .Option(ChannelOption.TcpNodelay, true)
+                .Option(ChannelOption.SoReuseaddr, true)
+                .Option(ChannelOption.SoKeepalive, true)
                 .Option(ChannelOption.ConnectTimeout, TimeSpan.FromSeconds(300))
                 .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
                 {
@@ -61,6 +63,9 @@ namespace Jt808TerminalEmulator.Core.Netty
         public Task Send(string phoneNumber, byte[] data) => sessionManager.GetSession(phoneNumber).Send(data);
 
         public Task<IEnumerable<ISession>> Sesions() => Task.FromResult(sessionManager.GetSessions());
+
+        public Task<ISession> GetSessionById(string sessionId) => Task.FromResult(sessionManager.GetSessionById(sessionId));
+        public Task<ISession> GetSession(string phoneNumber) => Task.FromResult(sessionManager.GetSession(phoneNumber));
     }
 
     public interface ITcpClient
@@ -68,6 +73,8 @@ namespace Jt808TerminalEmulator.Core.Netty
         public string Id { get; set; }
         Task<ISession> ConnectAsync(string ip, int port, string phoneNumber = null);
         Task<IEnumerable<ISession>> Sesions();
+        Task<ISession> GetSession(string phoneNumber);
+        Task<ISession> GetSessionById(string sessionId);
         Task Send(string phoneNumber, Jt808PackageInfo data);
         Task Send(string phoneNumber, byte[] data);
     }

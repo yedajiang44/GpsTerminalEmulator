@@ -20,7 +20,7 @@ namespace Jt808TerminalEmulator.Repository.Base
             this.dbContext = dbContext;
         }
 
-        public ValueTask<EntityEntry<T>> Add(T entity)
+        public virtual ValueTask<EntityEntry<T>> Add(T entity)
         {
             return dbContext.Set<T>().AddAsync(entity);
         }
@@ -32,22 +32,22 @@ namespace Jt808TerminalEmulator.Repository.Base
 
         public async Task<int> Update(Expression<Func<T, bool>> whereLambda, Expression<Func<T, T>> entity)
         {
-            return await dbContext.Set<T>().Where(whereLambda).UpdateAsync(entity);
+            return await BaseQuery().Where(whereLambda).UpdateAsync(entity);
         }
 
         public async Task<int> Delete(Expression<Func<T, bool>> whereLambda)
         {
-            return await dbContext.Set<T>().Where(whereLambda).DeleteAsync();
+            return await BaseQuery().Where(whereLambda).DeleteAsync();
         }
 
         public async Task<bool> IsExist(Expression<Func<T, bool>> whereLambda)
         {
-            return await dbContext.Set<T>().AnyAsync(whereLambda);
+            return await BaseQuery().AnyAsync(whereLambda);
         }
 
         public async Task<T> Find(Expression<Func<T, bool>> whereLambda)
         {
-            return await dbContext.Set<T>().AsNoTracking().FirstOrDefaultAsync(whereLambda);
+            return await BaseQuery().AsNoTracking().FirstOrDefaultAsync(whereLambda);
         }
 
         public async Task<List<T>> Query(List<(bool ifExpression, Expression<Func<T, bool>> whereExpression)> whereLambdas = null, string order = null)

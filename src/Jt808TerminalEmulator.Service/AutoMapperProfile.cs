@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq;
+using AutoMapper;
 using Jt808TerminalEmulator.Data.Entity;
 using Jt808TerminalEmulator.Model.Dtos;
 using System;
@@ -36,7 +37,8 @@ namespace Jt808TerminalEmulator.Service
                 {
                     if (string.IsNullOrEmpty(entity.Id)) entity.Init();
                 }).ReverseMap()
-                .ForMember(x => x.LineName, m => m.MapFrom(x => x.Line.Name));
+                .ForMember(x => x.LineName, m => m.MapFrom(x => x.Line.Name))
+                .ForMember(x => x.SimNumber, m => m.MapFrom(x => x.Terminals.FirstOrDefault().Sim));
         }
     }
 }

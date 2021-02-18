@@ -1,4 +1,6 @@
 ﻿using Jt808TerminalEmulator.Model.Dtos;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -102,7 +104,7 @@ namespace Jt808TerminalEmulator.Core
         }
 
         /// <summary>
-        /// 给定行进距离（以km为单位），现在可以计算两点之间的中间位置
+        /// 给定行进距离（以km为单位），以计算出两点之间距离起点的位置
         /// </summary>
         /// <param name="startLocation"></param>
         /// <param name="endLocation"></param>
@@ -140,9 +142,17 @@ namespace Jt808TerminalEmulator.Core
             return locations;
         }
 
+        /// <summary>
+        /// 重新插值
+        /// </summary>
+        /// <param name="dto">线路</param>
+        /// <param name="speed">速度</param>
+        /// <param name="interval">间隔时间</param>
+        /// <param name="alldistance">线路总长度，单位m</param>
+        /// <returns></returns>
         public static List<LocationDto> Reinterpolation(LineDto dto, double speed, int interval, out double alldistance)
         {
-            var intervalDistance = speed / 3600 * interval;
+            var intervalDistance = speed / 3.6 * interval;
             alldistance = 0d;
             var locations = new List<LocationDto>
             {
@@ -169,6 +179,39 @@ namespace Jt808TerminalEmulator.Core
                 }
             }
             return locations;
+        }
+
+        /// <summary>
+        /// 获取指定速度下行驶时长后线中的点
+        /// </summary>
+        /// <param name="localtions">线路中的点</param>
+        /// <param name="startLocation">当前点</param>
+        /// <param name="speed">速度，单位km/h</param>
+        /// <param name="interval">间隔时间，单位s</param>
+        /// <param name="nextIndex">下一个关键点的索引</param>
+        /// <returns></returns>
+        public static LocationDto GetNextLation(List<LocationDto> localtions, LocationDto startLocation, double speed, int interval, ref int nextIndex)
+        {
+            var logger = Jt808TerminalEmulator.Core.DependencyInjectionExtensions.ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<ILogger<LocationInterpolation>>();
+            if (nextIndex >= localtions.Count) return null;
+            var intervalDistance = speed / 3.6 * interval;
+            var nextDistance = intervalDistance;
+            for (; nextIndex < localtions.Count;)
+            {
+                var distance = LocationInterpolation.CalculateDistanceBetweenLocations(startLocation, localtions[nextIndex]);
+                if (distance < nextDistance)
+                {
+                    nextDistance -= distance;
+                    startLocation = localtions[nextIndex];
+                    nextIndex++;
+                    continue;
+                }
+                var endLocation = LocationInterpolation.IntermediaryLocation(startLocation, localtions[nextIndex], nextDistance);
+                distance = LocationInterpolation.CalculateDistanceBetweenLocations(endLocation, localtions[nextIndex]);
+                logger.LogInformation($"当前索引：{nextIndex}，差值{distance}起点[{startLocation.Logintude},{startLocation.Latitude}]终点,[{endLocation.Logintude},{endLocation.Latitude}],第{localtions[nextIndex].Order}个关键点[{localtions[nextIndex].Logintude},{localtions[nextIndex].Latitude}]");
+                return endLocation;
+            }
+            return default;
         }
     }
 }

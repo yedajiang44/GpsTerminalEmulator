@@ -27,6 +27,16 @@ namespace Jt808TerminalEmulator.Data.Entity
         public int Status { get; set; }
 
         /// <summary>
+        /// 服务器Ip
+        /// </summary>
+        public string Ip { get; set; }
+
+        /// <summary>
+        /// 服务器端口
+        /// </summary>
+        public int Port { get; set; }
+
+        /// <summary>
         /// 终端
         /// </summary>
         public IList<TerminalEntity> Terminals { get; set; }

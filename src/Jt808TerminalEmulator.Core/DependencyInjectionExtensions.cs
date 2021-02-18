@@ -13,6 +13,7 @@ namespace Jt808TerminalEmulator.Core
 {
     public static class DependencyInjectionExtensions
     {
+        public static IServiceProvider ServiceProvider { get; set; }
         public static IServiceCollection UseJt808TerminalEmulator(this IServiceCollection services)
         {
             return services.AddSingleton<PackageConverter>()

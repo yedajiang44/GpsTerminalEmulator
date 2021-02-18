@@ -14,6 +14,7 @@ namespace Jt808TerminalEmulator.Data.Configuration
             base.Configure(builder);
             builder.ToTable("Line");
             builder.HasMany(x => x.Locations).WithOne(x => x.Line).HasForeignKey(x => x.LineId).OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(x => x.Tasks).WithOne(x => x.Line).HasForeignKey(x => x.LineId).IsRequired();
         }
     }
 }
