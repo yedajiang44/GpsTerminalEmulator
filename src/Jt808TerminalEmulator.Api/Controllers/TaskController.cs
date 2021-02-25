@@ -65,6 +65,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(TaskDto dto)
         {
+            dto.Terminals = null;
             await currentservice.Update(dto);
             return Ok(new JsonResultDto<TaskDto>
             {

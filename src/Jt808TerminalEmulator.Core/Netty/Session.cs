@@ -71,6 +71,7 @@ namespace Jt808TerminalEmulator.Core.Netty
                     });
                     await Task.Delay(TimeSpan.FromSeconds(interval));
                 }
+                nextLocaltionIndex = 0;
             });
             return true;
         });
