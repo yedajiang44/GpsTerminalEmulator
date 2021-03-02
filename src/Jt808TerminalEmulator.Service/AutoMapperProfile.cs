@@ -17,6 +17,7 @@ namespace Jt808TerminalEmulator.Service
                 .AfterMap((dto, entity) =>
                 {
                     if (string.IsNullOrEmpty(entity.Id)) entity.Init();
+                    if (string.IsNullOrEmpty(dto.Id)) dto.Id = entity.Id;
                 })
                 .ReverseMap();
             CreateMap<LineDto, LineEntity>()
@@ -24,18 +25,21 @@ namespace Jt808TerminalEmulator.Service
                 {
                     if (string.IsNullOrEmpty(entity.Id)) entity.Init();
                     entity.LocationCount = entity.Locations.Count;
+                    if (string.IsNullOrEmpty(dto.Id)) dto.Id = entity.Id;
                 })
                 .ReverseMap();
             CreateMap<LocationDto, LocationEntity>()
                 .AfterMap((dto, entity) =>
                 {
                     if (string.IsNullOrEmpty(entity.Id)) entity.Init();
+                    if (string.IsNullOrEmpty(dto.Id)) dto.Id = entity.Id;
                 })
                 .ReverseMap();
             CreateMap<TaskDto, TaskEntity>()
                 .AfterMap((dto, entity) =>
                 {
                     if (string.IsNullOrEmpty(entity.Id)) entity.Init();
+                    if (string.IsNullOrEmpty(dto.Id)) dto.Id = entity.Id;
                 }).ReverseMap()
                 .ForMember(x => x.LineName, m => m.MapFrom(x => x.Line.Name))
                 .ForMember(x => x.SimNumber, m => m.MapFrom(x => x.Terminals.FirstOrDefault().Sim));

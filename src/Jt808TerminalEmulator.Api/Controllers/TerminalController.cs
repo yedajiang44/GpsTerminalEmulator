@@ -40,11 +40,11 @@ namespace Jt808TerminalEmulator.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(TerminalDto dto)
         {
-            var result = await terminalService.Add(dto) > 0;
-            return Ok(new JsonResultDto<bool>
+            var result = await terminalService.Add(dto);
+            return Ok(new JsonResultDto<string>
             {
                 Data = result,
-                Message = result ? null : "操作失败"
+                Message = string.IsNullOrEmpty(result) ? null : "操作失败"
             });
         }
 

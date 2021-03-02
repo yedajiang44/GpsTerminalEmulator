@@ -28,10 +28,12 @@ namespace Jt808TerminalEmulator.Service
             this.currentRepository = currentRepository;
         }
 
-        public virtual async Task<int>  Add(TDto dto)
+        public virtual async Task<string> Add(TDto dto)
         {
-            await currentRepository.Add(mapper.Map<TEntity>(dto));
-            return await unitOfWork.SaveChangesAsync();
+            var entity = mapper.Map<TEntity>(dto);
+            await currentRepository.Add(entity);
+            await unitOfWork.SaveChangesAsync();
+            return entity.Id;
         }
 
         public Task<int> Delete(Expression<Func<TDto, bool>> whereLambda)

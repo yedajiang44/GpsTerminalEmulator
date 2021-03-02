@@ -10,7 +10,7 @@ namespace Jt808TerminalEmulator.Interface
 {
     public interface IBaseService<T> where T : BaseDto
     {
-        Task<int> Add(T dto);
+        Task<string> Add(T dto);
 
         Task<int> Update(T dto);
 

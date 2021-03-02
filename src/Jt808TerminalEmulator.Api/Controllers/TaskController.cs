@@ -32,11 +32,11 @@ namespace Jt808TerminalEmulator.Api.Controllers
         {
             var terminal = await terminalService.Find(x => x.Sim == dto.SimNumber);
             dto.Terminals = new List<TerminalDto> { new TerminalDto { Id = terminal.Id } };
-            var result = await currentservice.Add(dto) > 0;
-            return Ok(new JsonResultDto<bool>
+            var result = await currentservice.Add(dto);
+            return Ok(new JsonResultDto<string>
             {
                 Data = result,
-                Message = result ? null : "操作失败"
+                Message = string.IsNullOrEmpty(result) ? null : "操作失败"
             });
         }
 

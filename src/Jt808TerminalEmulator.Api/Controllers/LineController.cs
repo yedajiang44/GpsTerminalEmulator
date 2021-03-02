@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Jt808TerminalEmulator.Core;
+using Jt808TerminalEmulator.Core.Netty;
 using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
 using Jt808TerminalEmulator.Model.Filters;
@@ -23,11 +24,12 @@ namespace Jt808TerminalEmulator.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(LineDto dto)
         {
-            var result = await lineService.Add(dto) > 0;
-            return Ok(new JsonResultDto<bool>
+            var result = await lineService.Add(dto);
+            LineManager.Add(dto);
+            return Ok(new JsonResultDto<string>
             {
                 Data = result,
-                Message = result ? null : "操作失败"
+                Message = string.IsNullOrEmpty(result) ? null : "操作失败"
             });
         }
 
@@ -35,6 +37,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             var result = await lineService.Delete(x => x.Id == id) > 0;
+            LineManager.Remove(id);
             return Ok(new JsonResultDto<bool>
             {
                 Data = result,
@@ -57,6 +60,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         public async Task<IActionResult> Update(LineDto dto)
         {
             await lineService.Update(dto);
+            LineManager.Add(dto);
             return Ok(new JsonResultDto<LineDto>
             {
                 Data = dto
