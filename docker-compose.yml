@@ -1,0 +1,50 @@
+version: "3"
+networks:
+  jt808terminalemulator:
+    driver: bridge
+    name: jt808terminalemulator
+services:
+  api:
+    image: "yedajiang44/jt808terminalemulator:latest"
+    container_name: api
+    hostname: api
+    restart: always
+    privileged: true
+    environment:
+      TZ: Asia/Shanghai
+      ConnectionStrings__DefaultConnection: Server=db;port=5432;Database=yedajiang44;User ID=root;Password=123456;
+      NLog__targets__logconsole__type: Console
+      NLog__rules__0__logger: "*"
+      NLog__rules__0__minLevel: Info
+      NLog__rules__0__writeTo: logconsole
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    sysctls:
+      - net.ipv4.ip_local_port_range=2048 65535 #可用端口范围
+      - net.ipv4.tcp_max_tw_buckets=30 #系统允许TIME_WAIT套接字数量的最大值， 如果超过这个数字，TIME_WAIT套接字将立刻被清除并打印警告信息。
+      - net.ipv4.tcp_tw_reuse=1 #开启重用，表示是否允许将处于TIME-WAIT状态的socket（TIME-WAIT的端口）用于新的TCP连接 。
+      - net.ipv4.tcp_fin_timeout=5 #对于本端断开的socket连接，TCP保持在FIN-WAIT-2状态的时间（秒）。对方可能会断开连接或一直不结束连接或不可预料的进程死亡。
+      - net.ipv4.tcp_timestamps=1 #TCP时间戳（会在TCP包头增加12个字节），以一种比重发超时更精确的方法（参考RFC 1323）来启用对RTT 的计算，为实现更好的性能应该启用这个选项。
+    networks:
+      - jt808terminalemulator
+
+  ui:
+    image: "yedajiang44/jt808terminalemulator-ui:latest"
+    container_name: ui
+    hostname: ui
+    restart: always
+    privileged: true
+    environment:
+      TZ: Asia/Shanghai
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    volumes:
+      - ./conf/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 4000:80
+    networks:
+      - jt808terminalemulator
