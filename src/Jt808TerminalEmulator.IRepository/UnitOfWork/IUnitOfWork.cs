@@ -8,5 +8,6 @@ namespace Jt808TerminalEmulator.Repository.UnitOfWork
     public interface IUnitOfWork
     {
         Task<int> SaveChangesAsync();
+        int SaveChanges();
     }
 }

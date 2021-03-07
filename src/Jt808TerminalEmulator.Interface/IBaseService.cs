@@ -22,7 +22,7 @@ namespace Jt808TerminalEmulator.Interface
 
         Task<T> Find(Expression<Func<T, bool>> whereLambda);
 
-        Task<List<T>> Query<TFilter>(TFilter filter=null) where TFilter : BaseFilter<T>;
+        Task<List<T>> Query<TFilter>(TFilter filter = null) where TFilter : BaseFilter<T>;
 
         Task<PageResultDto<T>> QueryWithPage<TFilter>(TFilter filter) where TFilter : BaseFilter<T>;
     }

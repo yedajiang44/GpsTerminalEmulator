@@ -7,7 +7,7 @@ namespace Jt808TerminalEmulator.Data.Entity
     /// <summary>
     /// 基础实体
     /// </summary>
-    public class BaseEntity
+    public class BaseEntity : IEntity<string>
     {
         /// <summary>
         /// 主键

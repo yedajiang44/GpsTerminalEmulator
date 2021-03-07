@@ -12,6 +12,9 @@ namespace Jt808TerminalEmulator.Repository.UnitOfWork
         {
             this.dbContext = dbContext;
         }
+
+        public int SaveChanges() => dbContext.SaveChanges();
+
         public Task<int> SaveChangesAsync() => dbContext.SaveChangesAsync();
     }
 }

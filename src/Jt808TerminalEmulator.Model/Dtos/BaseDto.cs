@@ -1,15 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Jt808TerminalEmulator.Model.Dtos
 {
-    public class BaseDto
+    public class BaseDto : BaseDto<string>
+    {
+    }
+    public class BaseDto<TPrimaryKey> : IBaseDto<TPrimaryKey>
     {
         /// <summary>
         /// 主键
         /// </summary>
-        public string Id { get; set; }
+        public TPrimaryKey Id { get; set; }
 
         /// <summary>
         /// 创建日期
