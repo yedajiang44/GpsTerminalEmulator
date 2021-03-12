@@ -48,3 +48,16 @@ services:
       - 4000:80
     networks:
       - jt808terminalemulator
+      
+  db:
+    image: postgres
+    container_name: db
+    hostname: db
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123456
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    networks:
+      - jt808terminalemulator
