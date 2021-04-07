@@ -1,13 +1,9 @@
 ﻿using System.Threading;
-using DotNetty.Common.Concurrency;
 using DotNetty.Transport.Channels;
-using GpsPlatform.Jt808Protocol;
 using GpsPlatform.Jt808Protocol.PackageInfo;
 using Jt808TerminalEmulator.Core.Abstract;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using GpsPlatform.Jt808Protocol.Instruction;
 using GpsPlatform.Jt808Protocol.Instruction.LocationReportInformation.Basic;
@@ -29,6 +25,14 @@ namespace Jt808TerminalEmulator.Core.Netty
 
         public LocationDto LastLocation { get; set; }
 
+        public Status Status { get; set; } = new Status(0);
+
+        public AlarmSign AlarmSign { get; set; } = new AlarmSign(0);
+
+        public double Speed { get; set; }
+
+        public int Interval { get; set; }
+
         public string PhoneNumber { get; set; }
 
         public Task Send(Jt808PackageInfo data) => Channel.WriteAndFlushAsync(data);
@@ -47,6 +51,10 @@ namespace Jt808TerminalEmulator.Core.Netty
 
         public Task<bool> StartTask(string lineId, double speed, int interval) => Task.Run<bool>(() =>
         {
+            Speed = speed;
+            Status.ACC = true;
+            Status.Locate = true;
+            Interval = interval;
             cts?.Cancel();
             cts = new CancellationTokenSource();
             Task.Run(async () =>
@@ -55,7 +63,7 @@ namespace Jt808TerminalEmulator.Core.Netty
                 while (!cts.IsCancellationRequested)
                 {
                     logger.LogInformation($"当前索引{index}");
-                    LastLocation = LineManager.GetNextLocaltion(lineId, LastLocation, speed, interval, ref index);
+                    LastLocation = LineManager.GetNextLocaltion(lineId, LastLocation, Speed, interval, ref index);
                     if (LastLocation == default) break;
                     this.nextLocaltionIndex = index;
                     await Send(new Jt808PackageInfo
@@ -63,14 +71,19 @@ namespace Jt808TerminalEmulator.Core.Netty
                         Header = new Header { PhoneNumber = PhoneNumber },
                         Body = new Jt808_0x0200_LocationReport
                         {
-                            AlarmSign = new AlarmSign(0),
-                            Status = new Status(0),
-                            Longitude = (int)(LastLocation.Logintude * 10e6),
-                            Latitude = (int)(LastLocation.Latitude * 10e6)
+                            AlarmSign = AlarmSign,
+                            Status = Status,
+                            Speed = (ushort)(speed * 10),
+                            Longitude = (int)(LastLocation.Logintude * 10e5),
+                            Latitude = (int)(LastLocation.Latitude * 10e5),
+                            DateTime = DateTime.Now,
                         }
                     });
-                    await Task.Delay(TimeSpan.FromSeconds(interval));
+                    await Task.Delay(TimeSpan.FromSeconds(Interval));
                 }
+                Speed = 0;
+                Status.ACC = false;
+                Status.Locate = false;
                 nextLocaltionIndex = 0;
             });
             return true;
@@ -83,8 +96,16 @@ namespace Jt808TerminalEmulator.Core.Netty
     }
     public interface ISession
     {
-        public string Id { get; }
-        public string PhoneNumber { get; set; }
+        string Id { get; }
+        string PhoneNumber { get; set; }
+
+        Status Status { get; set; }
+
+        AlarmSign AlarmSign { get; set; }
+
+        double Speed { get; set; }
+
+        int Interval { get; set; }
         Task Send(Jt808PackageInfo data);
         Task Send(byte[] data);
         Task<bool> StartTask(string lineId, double speed, int interval);
