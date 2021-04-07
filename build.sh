@@ -32,14 +32,17 @@ done
 
 echo '准备镜像...'
 docker tag yedajiang44/jt808terminalemulator yedajiang44/jt808terminalemulator:$tag
+docker tag yedajiang44/jt808terminalemulator registry.cn-hangzhou.aliyuncs.com/yedajiang44/jt808terminalemulator
 docker tag yedajiang44/jt808terminalemulator registry.cn-hangzhou.aliyuncs.com/yedajiang44/jt808terminalemulator:$tag
 echo '准备完毕...'
 
 echo '准备推送镜像...'
 echo '推送至docker hub...'
 docker push yedajiang44/jt808terminalemulator:$tag
+docker push yedajiang44/jt808terminalemulator
 echo '推送镜像完毕...'
 
 echo '推送至阿里云...'
 docker push registry.cn-hangzhou.aliyuncs.com/yedajiang44/jt808terminalemulator:$tag
+docker push registry.cn-hangzhou.aliyuncs.com/yedajiang44/jt808terminalemulator
 echo '推送镜像完毕...'
