@@ -42,8 +42,6 @@ services:
       driver: "json-file"
       options:
         max-size: "50m"
-    volumes:
-      - ./conf/default.conf:/etc/nginx/conf.d/default.conf
     ports:
       - 4000:80
     networks:
