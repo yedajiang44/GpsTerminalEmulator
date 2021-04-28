@@ -44,6 +44,8 @@ namespace Jt808TerminalEmulator.Api.Controllers
                 {
                     Id = "123456789",
                     LoginName = dto.UserName,
+                    Email = "602830483@qq.com",
+                    RealName = "yedajiang44",
                     UserRoles = new List<UserRoleDto> { }
                 };
                 var claims = new List<Claim>()

@@ -15,6 +15,11 @@ namespace Jt808TerminalEmulator.Model.Dtos
         public string Id { get; set; }
 
         /// <summary>
+        /// 头像url
+        /// </summary>
+        public string Avatar { get; set; }
+
+        /// <summary>
         /// 登录账号
         /// </summary>
         public string LoginName { get; set; }
