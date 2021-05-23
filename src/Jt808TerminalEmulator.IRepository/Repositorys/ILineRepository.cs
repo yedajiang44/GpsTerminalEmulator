@@ -11,6 +11,6 @@ namespace Jt808TerminalEmulator.Repository.Repositorys
         public LineRepository(EmulatorDbContext dbContext) : base(dbContext)
         {
         }
-        public override IQueryable<LineEntity> BaseQuery() => dbContext.Set<LineEntity>().Include(x => x.Locations);
+        public override IQueryable<LineEntity> BaseQuery() => dbContext.Set<LineEntity>().Include(x => x.Locations).AsSplitQuery();
     }
 }

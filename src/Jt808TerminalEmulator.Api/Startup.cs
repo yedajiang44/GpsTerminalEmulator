@@ -31,7 +31,7 @@ namespace Jt808TerminalEmulator.Api
                 .UseJt808TerminalEmulator()
                 .UseServices()
                 .AddLogging(logger => logger.ClearProviders().AddNLog(new NLogLoggingConfiguration(Configuration.GetSection("NLog"))))
-                .AddDbContext<EmulatorDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")))
+                .AddDbContextPool<EmulatorDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), builder => builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)))
                 // .AddAuthorization(options =>
                 // {
                 //     options.AddPolicy("Client", policy => policy.RequireRole("Client").Build());
