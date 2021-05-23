@@ -24,6 +24,24 @@
 
 - 浏览器打开`localhost:4000`
 
+## 二次开发
+
+### 开发环境
+
+- net5.0
+
+- PostgreSql
+
+- 部标 Jt808 服务端(非必须)
+
+### 生成迁移
+
+- 为了快速开发，该项目的 808 协议解析器使用的是我自己的库，因此请先添加我私人的 nuget 服务`http://nuget.yedajiang44.com/v3/index.json`或直接移除`Jt808TerminalEmulator.Core`项目里的`GpsPlatform.Jt808Protocol`包，并使用你自己的协议库
+
+- 按需更改 [appsettings.json](src/Jt808TerminalEmulator.Api/appsettings.json) 如数据库连接
+
+- 由于项目使用 codefirst，因此无需手动创建数据库，但是在运行项目前需要执行迁移，可以执行`migration.sh`脚本，也可以直接执行迁移命令
+
 ## 友情提醒及免责声明
 
 为避免该项目被投机者利用，特做此声明：`违反以下提醒造成的一切违法行为由使用者个人或单位自行承担，与作者无关`
