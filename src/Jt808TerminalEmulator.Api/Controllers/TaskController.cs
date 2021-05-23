@@ -8,9 +8,11 @@ using Jt808TerminalEmulator.Model.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Jt808TerminalEmulator.Core;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Jt808TerminalEmulator.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TaskController : ControllerBase

@@ -6,10 +6,12 @@ using Jt808TerminalEmulator.Core.Netty;
 using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
 using Jt808TerminalEmulator.Model.Filters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Jt808TerminalEmulator.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class LineController : ControllerBase

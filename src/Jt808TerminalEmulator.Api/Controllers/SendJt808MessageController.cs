@@ -12,11 +12,13 @@ using Jt808TerminalEmulator.Core.Netty;
 using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
 using Jt808TerminalEmulator.Model.Filters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace Jt808TerminalEmulator.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class SendJt808MessageController : ControllerBase

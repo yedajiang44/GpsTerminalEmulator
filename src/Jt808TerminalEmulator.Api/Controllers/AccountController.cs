@@ -16,6 +16,7 @@ using static Jt808TerminalEmulator.Api.Configurations.JwtInitializer;
 
 namespace Jt808TerminalEmulator.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase

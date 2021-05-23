@@ -8,10 +8,12 @@ using Jt808TerminalEmulator.Core.Abstract;
 using Jt808TerminalEmulator.Core.Netty;
 using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Jt808TerminalEmulator.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class SessionController : ControllerBase
