@@ -7,14 +7,15 @@ namespace Jt808TerminalEmulator.Repository.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
-        readonly EmulatorDbContext dbContext;
+        public EmulatorDbContext DbContext { get; private set; }
+
         public UnitOfWork(EmulatorDbContext dbContext)
         {
-            this.dbContext = dbContext;
+            DbContext = dbContext;
         }
 
-        public int SaveChanges() => dbContext.SaveChanges();
+        public int SaveChanges() => DbContext.SaveChanges();
 
-        public Task<int> SaveChangesAsync() => dbContext.SaveChangesAsync();
+        public Task<int> SaveChangesAsync() => DbContext.SaveChangesAsync();
     }
 }

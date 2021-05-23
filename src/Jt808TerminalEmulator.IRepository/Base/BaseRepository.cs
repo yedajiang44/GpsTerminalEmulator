@@ -25,32 +25,32 @@ namespace Jt808TerminalEmulator.Repository.Base
             return dbContext.Set<T>().AddAsync(entity);
         }
 
-        public void Update(T entity)
+        public virtual void Update(T entity)
         {
             dbContext.Update(entity);
         }
 
-        public async Task<int> Update(Expression<Func<T, bool>> whereLambda, Expression<Func<T, T>> entity)
+        public async virtual Task<int> Update(Expression<Func<T, bool>> whereLambda, Expression<Func<T, T>> entity)
         {
             return await BaseQuery().Where(whereLambda).UpdateAsync(entity);
         }
 
-        public async Task<int> Delete(Expression<Func<T, bool>> whereLambda)
+        public async virtual Task<int> Delete(Expression<Func<T, bool>> whereLambda)
         {
             return await BaseQuery().Where(whereLambda).DeleteAsync();
         }
 
-        public async Task<bool> IsExist(Expression<Func<T, bool>> whereLambda)
+        public async virtual Task<bool> IsExist(Expression<Func<T, bool>> whereLambda)
         {
             return await BaseQuery().AnyAsync(whereLambda);
         }
 
-        public async Task<T> Find(Expression<Func<T, bool>> whereLambda)
+        public async virtual Task<T> Find(Expression<Func<T, bool>> whereLambda)
         {
             return await BaseQuery().AsNoTracking().FirstOrDefaultAsync(whereLambda);
         }
 
-        public async Task<List<T>> Query(List<(bool ifExpression, Expression<Func<T, bool>> whereExpression)> whereLambdas = null, string order = null)
+        public async virtual Task<List<T>> Query(List<(bool ifExpression, Expression<Func<T, bool>> whereExpression)> whereLambdas = null, string order = null)
         {
             var query = BaseQuery();
             whereLambdas?.ForEach(x =>
@@ -60,23 +60,23 @@ namespace Jt808TerminalEmulator.Repository.Base
             return await query.ToListAsync();
         }
 
-        public async Task<Tuple<List<T>, int>> QueryWithPage(List<(bool ifExpression, Expression<Func<T, bool>> whereExpression)> whereLambdas, int pageIndex, int pageSize, string order)
+        public async virtual Task<Tuple<List<T>, long>> QueryWithPage(List<(bool ifExpression, Expression<Func<T, bool>> whereExpression)> whereLambdas, int pageIndex, int pageSize, string order)
         {
             var query = BaseQuery();
             whereLambdas?.ForEach(x =>
             {
                 query = query.WhereIf(x.ifExpression, x.whereExpression);
             });
-            var total = await query.CountAsync();
+            var total = await query.LongCountAsync();
             if (order != null)
             {
                 query = query.OrderBy(order);
             }
             var entities = await query.Skip(pageSize * (pageIndex - 1))
                                       .Take(pageSize).ToListAsync();
-            return new Tuple<List<T>, int>(entities, total);
+            return new Tuple<List<T>, long>(entities, total);
         }
 
-        public virtual IQueryable<T> BaseQuery() => dbContext.Set<T>().AsQueryable();
+        public virtual IQueryable<T> BaseQuery() => dbContext.Set<T>().AsSplitQuery();
     }
 }

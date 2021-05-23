@@ -25,6 +25,6 @@ namespace Jt808TerminalEmulator.Repository.Base
 
         Task<List<T>> Query(List<(bool ifExpression, Expression<Func<T, bool>> whereExpression)> whereLambdas=null, string order = null);
 
-        Task<Tuple<List<T>, int>> QueryWithPage(List<(bool ifExpression, Expression<Func<T, bool>> whereExpression)> whereLambdas, int intPageIndex = 1, int intPageSize = 20, string order = null);
+        Task<Tuple<List<T>, long>> QueryWithPage(List<(bool ifExpression, Expression<Func<T, bool>> whereExpression)> whereLambdas, int intPageIndex = 1, int intPageSize = 20, string order = null);
     }
 }

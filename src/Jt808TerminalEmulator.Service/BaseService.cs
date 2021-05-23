@@ -36,41 +36,41 @@ namespace Jt808TerminalEmulator.Service
             return entity.Id;
         }
 
-        public Task<int> Delete(Expression<Func<TDto, bool>> whereLambda)
+        public virtual Task<int> Delete(Expression<Func<TDto, bool>> whereLambda)
         {
             return currentRepository.Delete(mapper.MapExpression<Expression<Func<TEntity, bool>>>(whereLambda));
         }
 
-        public Task<int> Update(TDto dto)
+        public virtual Task<int> Update(TDto dto)
         {
             currentRepository.Update(mapper.Map<TEntity>(dto));
             return unitOfWork.SaveChangesAsync();
         }
 
-        public Task<int> Update(Expression<Func<TDto, bool>> whereLambda, Expression<Func<TDto, TDto>> dto)
+        public virtual Task<int> Update(Expression<Func<TDto, bool>> whereLambda, Expression<Func<TDto, TDto>> dto)
         {
             return currentRepository.Update(mapper.MapExpression<Expression<Func<TEntity, bool>>>(whereLambda), mapper.MapExpression<Expression<Func<TEntity, TEntity>>>(dto));
         }
 
-        public async Task<TDto> Find(Expression<Func<TDto, bool>> whereLambda)
+        public async virtual Task<TDto> Find(Expression<Func<TDto, bool>> whereLambda)
         {
             var entity = await currentRepository.Find(mapper.MapExpression<Expression<Func<TEntity, bool>>>(whereLambda));
             return mapper.Map<TDto>(entity);
         }
 
-        public Task<bool> IsExist(Expression<Func<TDto, bool>> whereLambda)
+        public virtual Task<bool> IsExist(Expression<Func<TDto, bool>> whereLambda)
         {
             return currentRepository.IsExist(mapper.MapExpression<Expression<Func<TEntity, bool>>>(whereLambda));
         }
 
-        public async Task<List<TDto>> Query<TFilter>(TFilter filter) where TFilter : BaseFilter<TDto>
+        public async virtual Task<List<TDto>> Query<TFilter>(TFilter filter) where TFilter : BaseFilter<TDto>
         {
             // TODO 排序
             var entitys = await currentRepository.Query(filter?.WhereLambda().Select(x => (x.ifExpression, mapper.MapExpression<Expression<Func<TEntity, bool>>>(x.whereExpression))).ToList());
             return mapper.Map<List<TDto>>(entitys);
         }
 
-        public async Task<PageResultDto<TDto>> QueryWithPage<TFilter>(TFilter filter) where TFilter : BaseFilter<TDto>
+        public async virtual Task<PageResultDto<TDto>> QueryWithPage<TFilter>(TFilter filter) where TFilter : BaseFilter<TDto>
         {
             // TODO 排序
             var (entitys, total) = await currentRepository.QueryWithPage(filter?.WhereLambda().Select(x => (x.ifExpression, mapper.MapExpression<Expression<Func<TEntity, bool>>>(x.whereExpression))).ToList(), filter?.Index ?? 1, filter?.Size ?? 20);

@@ -14,6 +14,7 @@ namespace Jt808TerminalEmulator.Data.Configuration
             base.Configure(builder);
             builder.ToTable("Location");
             builder.HasOne(x => x.Line);
+            builder.HasIndex(x=>x.LineId);
         }
     }
 }
