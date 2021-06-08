@@ -27,6 +27,10 @@ services:
       - net.ipv4.tcp_tw_reuse=1 #开启重用，表示是否允许将处于TIME-WAIT状态的socket（TIME-WAIT的端口）用于新的TCP连接 。
       - net.ipv4.tcp_fin_timeout=5 #对于本端断开的socket连接，TCP保持在FIN-WAIT-2状态的时间（秒）。对方可能会断开连接或一直不结束连接或不可预料的进程死亡。
       - net.ipv4.tcp_timestamps=1 #TCP时间戳（会在TCP包头增加12个字节），以一种比重发超时更精确的方法（参考RFC 1323）来启用对RTT 的计算，为实现更好的性能应该启用这个选项。
+    links:
+      - db
+    depends_on:
+      - db
     networks:
       - jt808terminalemulator
 
@@ -44,9 +48,13 @@ services:
         max-size: "50m"
     ports:
       - 4000:80
+    links:
+      - api
+    depends_on:
+      - api
     networks:
       - jt808terminalemulator
-      
+
   db:
     image: postgres
     container_name: db
