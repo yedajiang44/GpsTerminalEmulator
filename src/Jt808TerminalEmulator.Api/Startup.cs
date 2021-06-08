@@ -28,22 +28,23 @@ namespace Jt808TerminalEmulator.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddJsonWebToken(Configuration)
-                .UseJt808TerminalEmulator()
-                .UseServices()
-                .AddLogging(logger => logger.ClearProviders().AddNLog(new NLogLoggingConfiguration(Configuration.GetSection("NLog"))))
-                .AddDbContextPool<EmulatorDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), builder => builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)))
-                // .AddAuthorization(options =>
-                // {
-                //     options.AddPolicy("Client", policy => policy.RequireRole("Client").Build());
-                //     options.AddPolicy("Admin", policy => policy.RequireRole("Admin").Build());
-                //     //这个是并的关系
-                //     options.AddPolicy("AdminAndClient", policy => policy.RequireRole("Admin,Client").Build());
-                //     //这个是或的关系
-                //     options.AddPolicy("SystemOrAdmin", policy => policy.RequireRole("Admin", "System").Build());
-                // })
-                .AddControllers()
-                .AddJsonDateTimeConverters();
+            services.AddHostedService<InitHosted>()
+            .AddJsonWebToken(Configuration)
+            .UseJt808TerminalEmulator()
+            .UseServices()
+            .AddLogging(logger => logger.ClearProviders().AddNLog(new NLogLoggingConfiguration(Configuration.GetSection("NLog"))))
+            .AddDbContextPool<EmulatorDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), builder => builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)))
+            // .AddAuthorization(options =>
+            // {
+            //     options.AddPolicy("Client", policy => policy.RequireRole("Client").Build());
+            //     options.AddPolicy("Admin", policy => policy.RequireRole("Admin").Build());
+            //     //这个是并的关系
+            //     options.AddPolicy("AdminAndClient", policy => policy.RequireRole("Admin,Client").Build());
+            //     //这个是或的关系
+            //     options.AddPolicy("SystemOrAdmin", policy => policy.RequireRole("Admin", "System").Build());
+            // })
+            .AddControllers()
+            .AddJsonDateTimeConverters();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,9 +55,6 @@ namespace Jt808TerminalEmulator.Api
                 app.UseDeveloperExceptionPage();
             }
             var services = app.ApplicationServices.CreateScope().ServiceProvider;
-            services.GetService<IDatabaseService>().InitAsync().Wait();
-            var lines = services.GetRequiredService<ILineService>().Query<LineFilter>().Result;
-            services.GetService<LineManager>().ResetLine(lines);
 
             app.UseHttpsRedirection();
 
