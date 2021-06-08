@@ -43,10 +43,13 @@ namespace Jt808TerminalEmulator.Core.Netty
 
         private CancellationTokenSource cts;
 
-        public Session()
+        private LineManager lineManager;
+
+        public Session(IServiceProvider serviceProvider)
         {
-            packageConverter = Jt808TerminalEmulator.Core.DependencyInjectionExtensions.ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<IPackageConverter>();
-            logger = Jt808TerminalEmulator.Core.DependencyInjectionExtensions.ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<ILogger<Session>>();
+            packageConverter = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<IPackageConverter>();
+            logger = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<ILogger<Session>>();
+            lineManager = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<LineManager>();
         }
 
         public Task<bool> StartTask(string lineId, double speed, int interval) => Task.Run<bool>(() =>
@@ -63,7 +66,7 @@ namespace Jt808TerminalEmulator.Core.Netty
                 while (!cts.IsCancellationRequested)
                 {
                     logger.LogInformation($"当前索引{index}");
-                    LastLocation = LineManager.GetNextLocaltion(lineId, LastLocation, Speed, interval, ref index);
+                    LastLocation = lineManager.GetNextLocaltion(lineId, LastLocation, Speed, interval, ref index);
                     if (LastLocation == default) break;
                     this.nextLocaltionIndex = index;
                     await Send(new Jt808PackageInfo

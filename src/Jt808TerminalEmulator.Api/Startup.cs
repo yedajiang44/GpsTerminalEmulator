@@ -55,9 +55,8 @@ namespace Jt808TerminalEmulator.Api
             var services = app.ApplicationServices.CreateScope().ServiceProvider;
             services.GetService<IDatabaseService>().InitAsync().Wait();
             var lines = services.GetRequiredService<ILineService>().Query<LineFilter>().Result;
-            LineManager.ResetLine(lines);
+            services.GetService<LineManager>().ResetLine(lines);
 
-            Jt808TerminalEmulator.Core.DependencyInjectionExtensions.ServiceProvider = app.ApplicationServices;
             app.UseHttpsRedirection();
 
             app.UseRouting();

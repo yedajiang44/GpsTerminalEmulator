@@ -13,15 +13,20 @@ namespace Jt808TerminalEmulator.Core
     /// </summary>
     public class LocationInterpolation
     {
-        readonly static long radius = 6371393; // 地球的平均半径，以km为单位
-        readonly static double pi = Math.PI;
+        ILogger logger;
+        public LocationInterpolation(ILogger<LocationInterpolation> logger)
+        {
+            this.logger = logger;
+        }
+        readonly long radius = 6371393; // 地球的平均半径，以km为单位
+        readonly double pi = Math.PI;
 
         /// <summary>
         /// 辅助功能将度数转换为弧度
         /// </summary>
         /// <param name="deg"></param>
         /// <returns></returns>
-        public static double DegToRad(double deg)
+        public double DegToRad(double deg)
         {
             return (deg * pi / 180);
         }
@@ -31,7 +36,7 @@ namespace Jt808TerminalEmulator.Core
         /// </summary>
         /// <param name="rad"></param>
         /// <returns></returns>
-        public static double RadToDeg(double rad)
+        public double RadToDeg(double rad)
         {
             return (rad * 180 / pi);
         }
@@ -42,7 +47,7 @@ namespace Jt808TerminalEmulator.Core
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
         /// <returns></returns>
-        public static double CalculateBearing(LocationDto startPoint, LocationDto endPoint)
+        public double CalculateBearing(LocationDto startPoint, LocationDto endPoint)
         {
             var lat1 = DegToRad(startPoint.Latitude);
             var lat2 = DegToRad(endPoint.Latitude);
@@ -63,7 +68,7 @@ namespace Jt808TerminalEmulator.Core
         /// <param name="bearing"></param>
         /// <param name="distance"></param>
         /// <returns></returns>
-        public static LocationDto CalculateDestinationLocation(LocationDto point, double bearing, double distance)
+        public LocationDto CalculateDestinationLocation(LocationDto point, double bearing, double distance)
         {
 
             distance /= radius; // 转换为弧度的角距离
@@ -85,7 +90,7 @@ namespace Jt808TerminalEmulator.Core
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
         /// <returns></returns>
-        public static double CalculateDistanceBetweenLocations(LocationDto startPoint, LocationDto endPoint)
+        public double CalculateDistanceBetweenLocations(LocationDto startPoint, LocationDto endPoint)
         {
 
             var lat1 = DegToRad(startPoint.Latitude);
@@ -110,7 +115,7 @@ namespace Jt808TerminalEmulator.Core
         /// <param name="endLocation"></param>
         /// <param name="distanceTravelled">离起点的距离</param>
         /// <returns></returns>
-        public static LocationDto IntermediaryLocation(LocationDto startLocation, LocationDto endLocation, double distanceTravelled)
+        public LocationDto IntermediaryLocation(LocationDto startLocation, LocationDto endLocation, double distanceTravelled)
         {
             var bearing = CalculateBearing(startLocation, endLocation);
             return CalculateDestinationLocation(startLocation, bearing, distanceTravelled);
@@ -124,7 +129,7 @@ namespace Jt808TerminalEmulator.Core
         /// <param name="speed">速度</param>
         /// <param name="duration">持续时间，单位秒</param>
         /// <returns></returns>
-        public static List<LocationDto> IntermediaryLocation(LocationDto startLocation, LocationDto endLocation, double speed, long duration)
+        public List<LocationDto> IntermediaryLocation(LocationDto startLocation, LocationDto endLocation, double speed, long duration)
         {
             var locations = new List<LocationDto>();
 
@@ -150,7 +155,7 @@ namespace Jt808TerminalEmulator.Core
         /// <param name="interval">间隔时间</param>
         /// <param name="alldistance">线路总长度，单位m</param>
         /// <returns></returns>
-        public static List<LocationDto> Reinterpolation(LineDto dto, double speed, int interval, out double alldistance)
+        public List<LocationDto> Reinterpolation(LineDto dto, double speed, int interval, out double alldistance)
         {
             var intervalDistance = speed / 3.6 * interval;
             alldistance = 0d;
@@ -163,10 +168,10 @@ namespace Jt808TerminalEmulator.Core
             for (int i = 1; i < dto.Locations.Count - 1; i++)
             {
                 var endLocation = dto.Locations[i];
-                alldistance += LocationInterpolation.CalculateDistanceBetweenLocations(dto.Locations[i - 1], endLocation);
+                alldistance += CalculateDistanceBetweenLocations(dto.Locations[i - 1], endLocation);
                 while (true)
                 {
-                    var distance = LocationInterpolation.CalculateDistanceBetweenLocations(startLocation, endLocation);
+                    var distance = CalculateDistanceBetweenLocations(startLocation, endLocation);
                     if (distance < nextDistance)
                     {
                         nextDistance -= distance;
@@ -174,7 +179,7 @@ namespace Jt808TerminalEmulator.Core
                         break;
                     }
                     nextDistance = intervalDistance;
-                    startLocation = LocationInterpolation.IntermediaryLocation(startLocation, endLocation, intervalDistance);
+                    startLocation = IntermediaryLocation(startLocation, endLocation, intervalDistance);
                     locations.Add(startLocation);
                 }
             }
@@ -190,15 +195,14 @@ namespace Jt808TerminalEmulator.Core
         /// <param name="interval">间隔时间，单位s</param>
         /// <param name="nextIndex">下一个关键点的索引</param>
         /// <returns></returns>
-        public static LocationDto GetNextLation(List<LocationDto> localtions, LocationDto startLocation, double speed, int interval, ref int nextIndex)
+        public LocationDto GetNextLation(List<LocationDto> localtions, LocationDto startLocation, double speed, int interval, ref int nextIndex)
         {
-            var logger = Jt808TerminalEmulator.Core.DependencyInjectionExtensions.ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<ILogger<LocationInterpolation>>();
             if (nextIndex >= localtions.Count) return null;
             var intervalDistance = speed / 3.6 * interval;
             var nextDistance = intervalDistance;
             for (; nextIndex < localtions.Count;)
             {
-                var distance = LocationInterpolation.CalculateDistanceBetweenLocations(startLocation, localtions[nextIndex]);
+                var distance = CalculateDistanceBetweenLocations(startLocation, localtions[nextIndex]);
                 if (distance < nextDistance)
                 {
                     nextDistance -= distance;
@@ -206,8 +210,8 @@ namespace Jt808TerminalEmulator.Core
                     nextIndex++;
                     continue;
                 }
-                var endLocation = LocationInterpolation.IntermediaryLocation(startLocation, localtions[nextIndex], nextDistance);
-                distance = LocationInterpolation.CalculateDistanceBetweenLocations(endLocation, localtions[nextIndex]);
+                var endLocation = IntermediaryLocation(startLocation, localtions[nextIndex], nextDistance);
+                distance = CalculateDistanceBetweenLocations(endLocation, localtions[nextIndex]);
                 logger.LogInformation($"当前索引：{nextIndex}，差值{distance}起点[{startLocation.Logintude},{startLocation.Latitude}]终点,[{endLocation.Logintude},{endLocation.Latitude}],第{localtions[nextIndex].Order}个关键点[{localtions[nextIndex].Logintude},{localtions[nextIndex].Latitude}]");
                 return endLocation;
             }

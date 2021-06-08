@@ -24,11 +24,13 @@ namespace Jt808TerminalEmulator.Core.Netty
         readonly MultithreadEventLoopGroup eventLoopGroup;
         readonly Bootstrap bootstrap;
         readonly ISessionManager sessionManager;
+        readonly IServiceProvider serviceProvider;
 
 
         public TcpClient(IServiceProvider serviceProvider, ISessionManager sessionManager)
         {
             this.sessionManager = sessionManager;
+            this.serviceProvider = serviceProvider;
             eventLoopGroup = new MultithreadEventLoopGroup();
             bootstrap = new Bootstrap().Group(eventLoopGroup)
                 .Channel<TcpSocketChannel>()
@@ -53,7 +55,7 @@ namespace Jt808TerminalEmulator.Core.Netty
         {
             return bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(ip), port)).ContinueWith(task =>
             {
-                ISession session = new Session { Channel = task.Result, PhoneNumber = phoneNumber };
+                ISession session = new Session(serviceProvider) { Channel = task.Result, PhoneNumber = phoneNumber };
                 sessionManager.Add(session);
                 return session;
             }, TaskContinuationOptions.OnlyOnRanToCompletion);

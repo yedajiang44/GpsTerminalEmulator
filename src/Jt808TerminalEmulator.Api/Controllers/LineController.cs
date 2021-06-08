@@ -17,17 +17,19 @@ namespace Jt808TerminalEmulator.Api.Controllers
     public class LineController : ControllerBase
     {
         readonly ILineService lineService;
+        readonly LineManager lineManager;
 
-        public LineController(ILineService lineService)
+        public LineController(ILineService lineService, LineManager lineManager)
         {
             this.lineService = lineService;
+            this.lineManager = lineManager;
         }
 
         [HttpPost]
         public async Task<IActionResult> Add(LineDto dto)
         {
             var result = await lineService.Add(dto);
-            LineManager.Add(dto);
+            lineManager.Add(dto);
             return Ok(new JsonResultDto<string>
             {
                 Data = result,
@@ -39,7 +41,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             var result = await lineService.Delete(x => x.Id == id) > 0;
-            LineManager.Remove(id);
+            lineManager.Remove(id);
             return Ok(new JsonResultDto<bool>
             {
                 Data = result,
@@ -62,7 +64,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         public async Task<IActionResult> Update(LineDto dto)
         {
             await lineService.Update(dto);
-            LineManager.Add(dto);
+            lineManager.Add(dto);
             return Ok(new JsonResultDto<LineDto>
             {
                 Data = dto
