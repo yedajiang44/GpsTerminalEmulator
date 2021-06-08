@@ -1,3 +1,4 @@
+using Figgle;
 using Jt808TerminalEmulator.Api.Configurations;
 using Jt808TerminalEmulator.Core;
 using Jt808TerminalEmulator.Core.Netty;
@@ -70,6 +71,7 @@ namespace Jt808TerminalEmulator.Api
             {
                 endpoints.MapControllers();
             });
+            services.GetService<ILogger<Startup>>().LogInformation($"\r\n{FiggleFonts.Standard.Render("H e l l o , J t 8 0 8 !")}");
         }
     }
 }
