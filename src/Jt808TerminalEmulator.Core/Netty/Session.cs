@@ -12,6 +12,25 @@ using Microsoft.Extensions.Logging;
 
 namespace Jt808TerminalEmulator.Core.Netty
 {
+    public class WebSocketSession : IDisposable
+    {
+        public string Id => Channel.Id.AsShortText();
+        public IChannel Channel { get; private set; }
+        public DateTime LastActiveTime { get; set; }
+        public DateTime StartTime { get; set; }
+        public WebSocketSession(IChannel channel)
+        {
+            Channel = channel;
+        }
+        public Task Send(byte[] data) => Channel.WriteAndFlushAsync(data);
+        public Task Send(string data) => Channel.WriteAndFlushAsync(data);
+
+        public void Dispose()
+        {
+            Channel.DisconnectAsync();
+        }
+    }
+
     internal class Session : ISession
     {
         ILogger logger;

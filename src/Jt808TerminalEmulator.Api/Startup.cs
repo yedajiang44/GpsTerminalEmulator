@@ -30,7 +30,7 @@ namespace Jt808TerminalEmulator.Api
         {
             services.AddHostedService<InitHosted>()
             .AddJsonWebToken(Configuration)
-            .UseJt808TerminalEmulator()
+            .UseJt808TerminalEmulator(Configuration.GetSection("gateway"))
             .UseServices()
             .AddLogging(logger => logger.ClearProviders().AddNLog(new NLogLoggingConfiguration(Configuration.GetSection("NLog"))))
             .AddDbContextPool<EmulatorDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), builder => builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)))

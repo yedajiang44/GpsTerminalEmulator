@@ -3,18 +3,16 @@ using Jt808TerminalEmulator.Core.Abstract;
 using Jt808TerminalEmulator.Core.Netty;
 using Jt808TerminalEmulator.Core.Netty.Codec;
 using Jt808TerminalEmulator.Core.Netty.Handler;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Jt808TerminalEmulator.Core
 {
     public static class DependencyInjectionExtensions
     {
         public static IServiceProvider ServiceProvider { get; set; }
-        public static IServiceCollection UseJt808TerminalEmulator(this IServiceCollection services)
+        public static IServiceCollection UseJt808TerminalEmulator(this IServiceCollection services, IConfigurationSection configurationKey)
         {
             return services.AddSingleton<PackageConverter>()
                 .AddSingleton<ITcpClientManager, TcpClientManager>()
@@ -23,10 +21,14 @@ namespace Jt808TerminalEmulator.Core
                 .AddSingleton<IPackageConverter, DefaultIPackageConverter>()
                 .AddSingleton<LineManager>()
                 .AddSingleton<LocationInterpolation>()
+                .AddSingleton<WebSocketSessionManager>()
                 .AddScoped<ITcpClient, TcpClient>()
                 .AddScoped<Jt808TcpHandler>()
+                .AddScoped<WebSocketServerHandler>()
                 .AddScoped<Jt808Decoder>()
-                .AddScoped<Jt808Encoder>();
+                .AddScoped<Jt808Encoder>()
+                .AddHostedService<WebSocketHost>()
+                .Configure<GatewayConfiguration>(configurationKey);
         }
     }
 }
