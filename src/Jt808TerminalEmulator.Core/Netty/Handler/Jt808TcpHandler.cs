@@ -57,7 +57,7 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
                     context.CloseAsync();
                     break;
                 case IdleStateEvent writerIdle when writerIdle.State == IdleState.WriterIdle:
-                    var session = sessionManager.GetSessions().FirstOrDefault(x => x.Id == context.Channel.Id.AsLongText());
+                    var session = sessionManager.GetTcpClientSessions().FirstOrDefault(x => x.Id == context.Channel.Id.AsLongText());
                     if (session != default)
                         context.WriteAndFlushAsync(new Jt808PackageInfo
                         {

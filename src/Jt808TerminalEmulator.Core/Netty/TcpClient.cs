@@ -51,32 +51,32 @@ namespace Jt808TerminalEmulator.Core.Netty
         }
 
 
-        public Task<ISession> ConnectAsync(string ip, int port, string phoneNumber = null)
+        public Task<ITcpClientSession> ConnectAsync(string ip, int port, string phoneNumber = null)
         {
             return bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(ip), port)).ContinueWith(task =>
             {
-                ISession session = new Session(serviceProvider) { Channel = task.Result, PhoneNumber = phoneNumber };
+                ITcpClientSession session = new TcpClientSession(serviceProvider) { Channel = task.Result, PhoneNumber = phoneNumber };
                 sessionManager.Add(session);
                 return session;
             }, TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
-        public Task Send(string phoneNumber, Jt808PackageInfo data) => sessionManager.GetSession(phoneNumber).Send(data);
-        public Task Send(string phoneNumber, byte[] data) => sessionManager.GetSession(phoneNumber).Send(data);
+        public Task Send(string phoneNumber, Jt808PackageInfo data) => sessionManager.GetTcpClientSession(phoneNumber).Send(data);
+        public Task Send(string phoneNumber, byte[] data) => sessionManager.GetTcpClientSession(phoneNumber).Send(data);
 
-        public Task<IEnumerable<ISession>> Sesions() => Task.FromResult(sessionManager.GetSessions());
+        public Task<IEnumerable<ITcpClientSession>> Sesions() => Task.FromResult(sessionManager.GetTcpClientSessions());
 
-        public Task<ISession> GetSessionById(string sessionId) => Task.FromResult(sessionManager.GetSessionById(sessionId));
-        public Task<ISession> GetSession(string phoneNumber) => Task.FromResult(sessionManager.GetSession(phoneNumber));
+        public Task<ITcpClientSession> GetSessionById(string sessionId) => Task.FromResult(sessionManager.GetTcpClientSessionById(sessionId));
+        public Task<ITcpClientSession> GetSession(string phoneNumber) => Task.FromResult(sessionManager.GetTcpClientSession(phoneNumber));
     }
 
     public interface ITcpClient
     {
         public string Id { get; set; }
-        Task<ISession> ConnectAsync(string ip, int port, string phoneNumber = null);
-        Task<IEnumerable<ISession>> Sesions();
-        Task<ISession> GetSession(string phoneNumber);
-        Task<ISession> GetSessionById(string sessionId);
+        Task<ITcpClientSession> ConnectAsync(string ip, int port, string phoneNumber = null);
+        Task<IEnumerable<ITcpClientSession>> Sesions();
+        Task<ITcpClientSession> GetSession(string phoneNumber);
+        Task<ITcpClientSession> GetSessionById(string sessionId);
         Task Send(string phoneNumber, Jt808PackageInfo data);
         Task Send(string phoneNumber, byte[] data);
     }
