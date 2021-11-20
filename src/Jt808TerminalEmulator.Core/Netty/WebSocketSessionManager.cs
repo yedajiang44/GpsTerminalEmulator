@@ -11,16 +11,16 @@ namespace Jt808TerminalEmulator.Core.Netty
     public class WebSocketSessionManager
     {
         private readonly ILogger logger;
-        private ConcurrentDictionary<string, WebSocketSession> Sessions { get; } = new ConcurrentDictionary<string, WebSocketSession>();
+        private ConcurrentDictionary<string, IWebSocketSession> Sessions { get; } = new ConcurrentDictionary<string, IWebSocketSession>();
         public int SessionCount => Sessions.Count;
         public WebSocketSessionManager(ILogger<WebSocketSessionManager> logger)
         {
             this.logger = logger;
         }
 
-        public IEnumerable<WebSocketSession> GetAllSessions() => Sessions.Values;
+        public IEnumerable<IWebSocketSession> GetAllSessions() => Sessions.Values;
 
-        public bool TryAdd(WebSocketSession session) => Sessions.TryAdd(session.Id, session);
+        public bool TryAdd(IWebSocketSession session) => Sessions.TryAdd(session.Id, session);
         public bool TryRemove(string sessionId)
         {
             if (Sessions.TryRemove(sessionId, out var session))

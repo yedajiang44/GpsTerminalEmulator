@@ -12,15 +12,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Jt808TerminalEmulator.Core.Netty
 {
-    public class WebSocketSession : IDisposable
+    internal class WebSocketSession : IWebSocketSession
     {
         public string Id => Channel.Id.AsShortText();
-        public IChannel Channel { get; private set; }
+        IChannel Channel { get; set; }
         public DateTime LastActiveTime { get; set; }
-        public DateTime StartTime { get; set; }
+        public DateTime StartTime { get; private set; }
         public WebSocketSession(IChannel channel)
         {
             Channel = channel;
+            StartTime = DateTime.Now;
         }
         public Task Send(byte[] data) => Channel.WriteAndFlushAsync(data);
         public Task Send(string data) => Channel.WriteAndFlushAsync(data);
@@ -31,7 +32,7 @@ namespace Jt808TerminalEmulator.Core.Netty
         }
     }
 
-    internal class Session : ISession
+    internal class TcpClientSession : ITcpClientSession
     {
         ILogger logger;
         public IChannel Channel { get; set; }
@@ -64,10 +65,10 @@ namespace Jt808TerminalEmulator.Core.Netty
 
         private LineManager lineManager;
 
-        public Session(IServiceProvider serviceProvider)
+        public TcpClientSession(IServiceProvider serviceProvider)
         {
             packageConverter = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<IPackageConverter>();
-            logger = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<ILogger<Session>>();
+            logger = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<ILogger<TcpClientSession>>();
             lineManager = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<LineManager>();
         }
 
@@ -115,10 +116,22 @@ namespace Jt808TerminalEmulator.Core.Netty
             cts.Cancel();
             return true;
         });
+
+        public void Dispose()
+        {
+            if (!cts.IsCancellationRequested) cts.Cancel();
+            Channel.DisconnectAsync();
+        }
     }
-    public interface ISession
+    public interface IWebSocketSession : ISession
     {
-        string Id { get; }
+        DateTime StartTime { get; }
+        DateTime LastActiveTime { get; set; }
+        Task Send(byte[] data);
+        Task Send(string data);
+    }
+    public interface ITcpClientSession : ISession
+    {
         string PhoneNumber { get; set; }
 
         Status Status { get; set; }
@@ -132,5 +145,9 @@ namespace Jt808TerminalEmulator.Core.Netty
         Task Send(byte[] data);
         Task<bool> StartTask(string lineId, double speed, int interval);
         Task<bool> StopTask();
+    }
+    public interface ISession : IDisposable
+    {
+        string Id { get; }
     }
 }
