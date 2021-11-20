@@ -2,7 +2,7 @@
 dotnet publish ./src/Jt808TerminalEmulator.Api/Jt808TerminalEmulator.Api.csproj -c Release
 while true; do
     stty -icanon min 0 time 100
-    print "是否编译镜像(yes or no)?"
+    printf "是否编译镜像(yes or no)?"
     read -r Arg
     case $Arg in
     Y | y | YES | yes)
@@ -15,15 +15,15 @@ while true; do
         break ;;
     esac
 done
-print "准备编译..."
+printf "准备编译..."
 
 docker build --pull --rm --no-cache -f "Dockerfile" -t yedajiang44/jt808terminalemulator "."
 
-print "编译完成!"
+printf "编译完成!"
 
 while true; do
     stty -icanon min 0 time 100
-    print "是否推送镜像(yes or no)?"
+    printf "是否推送镜像(yes or no)?"
     read -r Arg
     case $Arg in
     Y | y | YES | yes)
@@ -39,7 +39,7 @@ done
 
 while true; do
     stty -icanon min 0 time 100
-    print 输入镜像tag：
+    printf 输入镜像tag：
     read -r tag
     case $tag in
     "") ;;
