@@ -88,7 +88,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        public async Task<IActionResult> Start([FromRoute] string id)// TODO 使用202异步处理
+        public async Task<IActionResult> Start([FromRoute] string id)
         {
             var task = await currentservice.Find(x => x.Id == id);
             var line = await lineService.Find(x => x.Id == task.LineId);
@@ -99,7 +99,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        public async Task<IActionResult> Stop([FromRoute] string id)// TODO 使用202异步处理
+        public async Task<IActionResult> Stop([FromRoute] string id)
         {
             var task = await currentservice.Find(x => x.Id == id);
             var client = await tcpClientFactory.CreateTcpClient();

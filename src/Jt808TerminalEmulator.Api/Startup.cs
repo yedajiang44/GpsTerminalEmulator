@@ -1,9 +1,6 @@
 using Figgle;
 using Jt808TerminalEmulator.Api.Configurations;
 using Jt808TerminalEmulator.Core;
-using Jt808TerminalEmulator.Core.Netty;
-using Jt808TerminalEmulator.Interface;
-using Jt808TerminalEmulator.Model.Filters;
 using Jt808TerminalEmulator.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,6 +29,7 @@ namespace Jt808TerminalEmulator.Api
             .AddJsonWebToken(Configuration)
             .UseJt808TerminalEmulator(Configuration.GetSection("gateway"))
             .UseServices()
+            .AddSwagger()
             .AddLogging(logger => logger.ClearProviders().AddNLog(new NLogLoggingConfiguration(Configuration.GetSection("NLog"))))
             .AddDbContextPool<EmulatorDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), builder => builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)))
             // .AddAuthorization(options =>
@@ -53,6 +51,7 @@ namespace Jt808TerminalEmulator.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwaggerAndUI();
             }
             var services = app.ApplicationServices.CreateScope().ServiceProvider;
 
