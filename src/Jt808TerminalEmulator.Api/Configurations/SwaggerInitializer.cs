@@ -1,13 +1,9 @@
-using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
 namespace Jt808TerminalEmulator.Api.Configurations
 {
     public static class SwaggerInitializer
     {
-
         public static IServiceCollection AddSwagger(this IServiceCollection services)
         {
             return services.AddSwaggerGen(c =>

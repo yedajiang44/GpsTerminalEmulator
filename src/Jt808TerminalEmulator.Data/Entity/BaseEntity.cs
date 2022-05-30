@@ -17,7 +17,7 @@ namespace Jt808TerminalEmulator.Data.Entity
         /// <summary>
         /// 创建日期
         /// </summary>
-        public DateTime CreateDateTime { get; set; }
+        public DateTimeOffset CreateDateTime { get; set; }
 
         /// <summary>
         /// 是否删除
@@ -42,7 +42,7 @@ namespace Jt808TerminalEmulator.Data.Entity
         public static void Init(this BaseEntity entity)
         {
             entity.Id = Guid.NewGuid().ToString("N");
-            entity.CreateDateTime = DateTime.Now;
+            entity.CreateDateTime = DateTimeOffset.UtcNow;
         }
 
         /// <summary>

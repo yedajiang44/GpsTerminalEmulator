@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Jt808TerminalEmulator.Core;
-using Jt808TerminalEmulator.Core.Abstract;
+﻿using Jt808TerminalEmulator.Core.Abstract;
 using Jt808TerminalEmulator.Core.Netty;
 using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
@@ -32,7 +26,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         {
             try
             {
-                return Ok(new JsonResultDto<IEnumerable<ISession>>
+                return Ok(new JsonResultDto<IEnumerable<Core.Netty.ISession>>
                 {
                     Flag = true,
                     Data = tcpClientManager.GetTcpClients().SelectMany(x => x.Sesions().Result)
@@ -40,7 +34,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
             }
             catch (Exception e)
             {
-                return Ok(new JsonResultDto<IEnumerable<ISession>>
+                return Ok(new JsonResultDto<IEnumerable<Core.Netty.ISession>>
                 {
                     Message = e.Message
                 });

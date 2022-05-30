@@ -1,7 +1,6 @@
-﻿using System;
+﻿using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Jt808TerminalEmulator.Api.Configurations
 {
@@ -21,34 +20,32 @@ namespace Jt808TerminalEmulator.Api.Configurations
     {
         public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if (reader.TokenType == JsonTokenType.String)
+            if (reader.TokenType == JsonTokenType.String && typeToConvert == typeof(DateTime) && DateTime.TryParseExact(reader.GetString(), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
             {
-                if (DateTime.TryParse(reader.GetString(), out DateTime date))
-                    return date;
+                return date;
             }
             return reader.GetDateTime();
         }
 
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.ToString("yyyy-MM-dd HH:mm:ss"));
+            writer.WriteStringValue(value.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss"));
         }
     }
     internal class DatetimeOffsetJsonConverter : JsonConverter<DateTimeOffset>
     {
         public override DateTimeOffset Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if (reader.TokenType == JsonTokenType.String)
+            if (reader.TokenType == JsonTokenType.String && typeToConvert == typeof(DateTimeOffset) && DateTimeOffset.TryParseExact(reader.GetString(), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
             {
-                if (DateTimeOffset.TryParse(reader.GetString(), out DateTimeOffset date))
-                    return date;
+                return date;
             }
             return reader.GetDateTime();
         }
 
         public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.ToString("yyyy-MM-dd HH:mm:ss"));
+            writer.WriteStringValue(value.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss"));
         }
     }
 }

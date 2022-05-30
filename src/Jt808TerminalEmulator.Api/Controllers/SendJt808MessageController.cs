@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using GpsPlatform.Jt808Protocol.Instruction;
-using GpsPlatform.Jt808Protocol.PackageInfo;
+﻿using System.Diagnostics;
 using Jt808TerminalEmulator.Core;
 using Jt808TerminalEmulator.Core.Abstract;
-using Jt808TerminalEmulator.Core.Netty;
 using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
 using Jt808TerminalEmulator.Model.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace Jt808TerminalEmulator.Api.Controllers
 {
@@ -43,7 +34,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
             stopwatch.Start();
             var client = await tcpClientFactory.CreateTcpClient();
             Parallel.ForEach(await terminalService.Query<TerminalFilter>(), x => client.ConnectAsync(ip, port, x.Sim));
-            return Ok(new JsonResultDto<IEnumerable<ISession>>
+            return Ok(new JsonResultDto<IEnumerable<Core.Netty.ISession>>
             {
                 Flag = true,
                 Data = tcpClientManager.GetTcpClients().SelectMany(x => x.Sesions().Result),

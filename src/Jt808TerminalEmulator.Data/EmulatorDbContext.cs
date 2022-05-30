@@ -25,10 +25,5 @@ namespace Jt808TerminalEmulator
                     modelBuilder.ApplyConfiguration(configurationInstance);
                 });
         }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-        }
     }
 }

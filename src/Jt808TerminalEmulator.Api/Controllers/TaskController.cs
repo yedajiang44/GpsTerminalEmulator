@@ -1,13 +1,8 @@
-using System.Net;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
 using Jt808TerminalEmulator.Model.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Jt808TerminalEmulator.Core;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Jt808TerminalEmulator.Api.Controllers
