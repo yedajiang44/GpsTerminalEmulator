@@ -15,6 +15,6 @@ namespace Jt808TerminalEmulator.Model.Dtos
         /// <summary>
         /// 创建日期
         /// </summary>
-        public DateTimeOffset CreateDateTime { get; set; }
+        public DateTime CreateDateTime { get; set; }
     }
 }

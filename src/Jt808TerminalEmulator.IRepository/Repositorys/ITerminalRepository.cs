@@ -1,11 +1,11 @@
-﻿using Bogus;
-using Jt808TerminalEmulator.Data.Entity;
-using Jt808TerminalEmulator.Repository.Base;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Bogus;
+using Jt808TerminalEmulator.Data.Entity;
+using Jt808TerminalEmulator.Repository.Base;
 
 namespace Jt808TerminalEmulator.Repository.Repositorys
 {
@@ -26,7 +26,7 @@ namespace Jt808TerminalEmulator.Repository.Repositorys
                 .RuleFor(x => x.Id, x => Guid.NewGuid().ToString("N"))
                 .RuleFor(x => x.IsDeleted, x => false)
                 .RuleFor(x => x.CreateUserId, x => null)
-                .RuleFor(x => x.CreateDateTime, x => x.Date.Past())
+                .RuleFor(x => x.CreateDateTime, x =>DateTime.SpecifyKind(x.Date.Past(),DateTimeKind.Utc))
                 .RuleFor(x => x.LicensePlate, x => x.Random.Replace("??#####"))
                 .RuleFor(x => x.Sim, x => x.Phone.PhoneNumber("###########"))
                 .Ignore(x => x.Tasks)
