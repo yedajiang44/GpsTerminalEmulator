@@ -10,12 +10,12 @@ namespace Jt808TerminalEmulator.Model.Filters
         /// <summary>
         /// 当前页码
         /// </summary>
-        public int Index { get; set; }
+        public int Index { get; set; } = 1;
 
         /// <summary>
         /// 每页长度
         /// </summary>
-        public int Size { get; set; }
+        public int Size { get; set; } = 20;
 
         /// <summary>
         /// 排序表达式

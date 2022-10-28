@@ -1,9 +1,12 @@
+using System.ComponentModel;
+using GpsPlatform.Infrastructure.Extentions;
+using Jt808TerminalEmulator.Core;
 using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
+using Jt808TerminalEmulator.Model.Enum;
 using Jt808TerminalEmulator.Model.Filters;
-using Microsoft.AspNetCore.Mvc;
-using Jt808TerminalEmulator.Core;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Jt808TerminalEmulator.Api.Controllers
 {
@@ -80,6 +83,13 @@ namespace Jt808TerminalEmulator.Api.Controllers
         public async Task<IActionResult> Search([FromQuery] TaskFilter filter)
         {
             return Ok(await currentservice.QueryWithPage(filter));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("type/[action]/{keyword?}")]
+        public IActionResult TypeSearch(string keyword)
+        {
+            return Ok(Enum.GetValues<TaskType>().Select(x => new { value = (int)x, description = x.ToDescription() }).Where(x => string.IsNullOrEmpty(keyword) || x.description.Contains(keyword)));
         }
 
         [HttpGet("[action]/{id}")]

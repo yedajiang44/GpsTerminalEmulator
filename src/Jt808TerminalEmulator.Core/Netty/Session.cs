@@ -1,13 +1,13 @@
-﻿using System.Threading;
-using DotNetty.Transport.Channels;
-using GpsPlatform.Jt808Protocol.PackageInfo;
-using Jt808TerminalEmulator.Core.Abstract;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using DotNetty.Transport.Channels;
 using GpsPlatform.Jt808Protocol.Instruction;
 using GpsPlatform.Jt808Protocol.Instruction.LocationReportInformation.Basic;
+using GpsPlatform.Jt808Protocol.PackageInfo;
 using Jt808TerminalEmulator.Model.Dtos;
+using Jt808TerminalEmulator.Model.Enum;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Jt808TerminalEmulator.Core.Netty
@@ -15,9 +15,9 @@ namespace Jt808TerminalEmulator.Core.Netty
     internal class WebSocketSession : IWebSocketSession
     {
         public string Id => Channel.Id.AsShortText();
-        IChannel Channel { get; set; }
+        IChannel Channel { get; }
         public DateTime LastActiveTime { get; set; }
-        public DateTime StartTime { get; private set; }
+        public DateTime StartTime { get; }
         public WebSocketSession(IChannel channel)
         {
             Channel = channel;
@@ -28,22 +28,18 @@ namespace Jt808TerminalEmulator.Core.Netty
 
         public void Dispose()
         {
-            Channel.DisconnectAsync();
+            Channel.CloseAsync();
         }
     }
 
     internal class TcpClientSession : ITcpClientSession
     {
-        ILogger logger;
+        private readonly ILogger logger;
         public IChannel Channel { get; set; }
 
         public string Id => Channel?.Id.AsLongText();
 
-        public int nextLocaltionIndex { get; set; }
-
-        public DateTime LastLocationDateTime { get; set; }
-
-        public LocationDto LastLocation { get; set; }
+        public Jt808_0x0200_LocationReport LastLocation { get; set; }
 
         public Status Status { get; set; } = new Status(0);
 
@@ -59,20 +55,17 @@ namespace Jt808TerminalEmulator.Core.Netty
 
         public Task Send(byte[] data) => Channel.WriteAndFlushAsync(data);
 
-        private IPackageConverter packageConverter;
-
         private CancellationTokenSource cts;
 
-        private LineManager lineManager;
+        private readonly LineManager lineManager;
 
         public TcpClientSession(IServiceProvider serviceProvider)
         {
-            packageConverter = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<IPackageConverter>();
             logger = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<ILogger<TcpClientSession>>();
             lineManager = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<LineManager>();
         }
 
-        public Task<bool> StartTask(string lineId, double speed, int interval) => Task.Run<bool>(() =>
+        public Task<bool> StartTask(string lineId, double speed, int interval, TaskType type) => Task.Run(() =>
         {
             Speed = speed;
             Status.ACC = true;
@@ -83,35 +76,44 @@ namespace Jt808TerminalEmulator.Core.Netty
             Task.Run(async () =>
             {
                 var index = 0;
+                var reverse = false;
+                var location = new LocationDto();
                 while (!cts.IsCancellationRequested)
                 {
                     logger.LogInformation($"当前索引{index}");
-                    LastLocation = lineManager.GetNextLocaltion(lineId, LastLocation, Speed, interval, ref index);
-                    if (LastLocation == default) break;
-                    this.nextLocaltionIndex = index;
+                    location = lineManager.GetNextLocation(lineId, location, Speed, interval, ref index, reverse);
+                    if (location == default)
+                    {
+                        index = 0;
+                        if (type == TaskType.LoopBack) reverse = !reverse;
+                        if (type == TaskType.Once)
+                            break;
+                        else
+                            continue;
+                    }
+                    LastLocation = new Jt808_0x0200_LocationReport
+                    {
+                        AlarmSign = AlarmSign,
+                        Status = Status,
+                        Speed = (ushort)(speed * 10),
+                        Longitude = (int)(location.Logintude * 10e5),
+                        Latitude = (int)(location.Latitude * 10e5),
+                        DateTime = DateTime.Now,
+                    };
                     await Send(new Jt808PackageInfo
                     {
                         Header = new Header { PhoneNumber = PhoneNumber },
-                        Body = new Jt808_0x0200_LocationReport
-                        {
-                            AlarmSign = AlarmSign,
-                            Status = Status,
-                            Speed = (ushort)(speed * 10),
-                            Longitude = (int)(LastLocation.Logintude * 10e5),
-                            Latitude = (int)(LastLocation.Latitude * 10e5),
-                            DateTime = DateTime.Now,
-                        }
+                        Body = LastLocation
                     });
                     await Task.Delay(TimeSpan.FromSeconds(Interval));
                 }
                 Speed = 0;
                 Status.ACC = false;
                 Status.Locate = false;
-                nextLocaltionIndex = 0;
             });
             return true;
         });
-        public Task<bool> StopTask() => Task.Run<bool>(() =>
+        public Task<bool> StopTask() => Task.Run(() =>
         {
             cts.Cancel();
             return true;
@@ -143,7 +145,7 @@ namespace Jt808TerminalEmulator.Core.Netty
         int Interval { get; set; }
         Task Send(Jt808PackageInfo data);
         Task Send(byte[] data);
-        Task<bool> StartTask(string lineId, double speed, int interval);
+        Task<bool> StartTask(string lineId, double speed, int interval, TaskType type = TaskType.Once);
         Task<bool> StopTask();
     }
     public interface ISession : IDisposable

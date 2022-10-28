@@ -33,11 +33,15 @@ namespace Jt808TerminalEmulator.Api.Controllers
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             var client = await tcpClientFactory.CreateTcpClient();
-            Parallel.ForEach(await terminalService.Query<TerminalFilter>(), x => client.ConnectAsync(ip, port, x.Sim));
-            return Ok(new JsonResultDto<IEnumerable<Core.Netty.ISession>>
+            var terminals = await terminalService.Query<TerminalFilter>();
+            _ = terminals.ConvertAll(x => client.ConnectAsync(ip, port, x.Sim)
+            .ContinueWith(x => logger.LogError(x.Exception, "connect error: {message}", x.Exception.Message), TaskContinuationOptions.NotOnRanToCompletion)
+            .ConfigureAwait(false))
+            .ToList();
+            return Ok(new JsonResultDto<int>
             {
                 Flag = true,
-                Data = tcpClientManager.GetTcpClients().SelectMany(x => x.Sesions().Result),
+                Data = terminals.Count,
                 Message = $"耗时：{stopwatch.ElapsedMilliseconds}毫秒"
             });
         }

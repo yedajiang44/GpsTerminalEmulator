@@ -1,4 +1,9 @@
-﻿using DotNetty.Buffers;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using DotNetty.Buffers;
 using DotNetty.Codecs;
 using DotNetty.Handlers.Timeout;
 using DotNetty.Transport.Bootstrapping;
@@ -9,11 +14,6 @@ using Jt808TerminalEmulator.Core.Abstract;
 using Jt808TerminalEmulator.Core.Netty.Codec;
 using Jt808TerminalEmulator.Core.Netty.Handler;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace Jt808TerminalEmulator.Core.Netty
 {
@@ -51,14 +51,12 @@ namespace Jt808TerminalEmulator.Core.Netty
         }
 
 
-        public Task<ITcpClientSession> ConnectAsync(string ip, int port, string phoneNumber = null)
+        public async Task<ITcpClientSession> ConnectAsync(string ip, int port, string phoneNumber = null)
         {
-            return bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(ip), port)).ContinueWith(task =>
-            {
-                ITcpClientSession session = new TcpClientSession(serviceProvider) { Channel = task.Result, PhoneNumber = phoneNumber };
-                sessionManager.Add(session);
-                return session;
-            }, TaskContinuationOptions.OnlyOnRanToCompletion);
+            var channel = await bootstrap.ConnectAsync(new DnsEndPoint(ip, port));
+            ITcpClientSession session = new TcpClientSession(serviceProvider) { Channel = channel, PhoneNumber = phoneNumber };
+            sessionManager.Add(session);
+            return session;
         }
 
         public Task Send(string phoneNumber, Jt808PackageInfo data) => sessionManager.GetTcpClientSession(phoneNumber).Send(data);

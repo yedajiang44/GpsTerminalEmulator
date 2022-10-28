@@ -1,10 +1,10 @@
-﻿using Jt808TerminalEmulator.Model.Dtos;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jt808TerminalEmulator.Model.Dtos;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Jt808TerminalEmulator.Core
 {
@@ -189,30 +189,29 @@ namespace Jt808TerminalEmulator.Core
         /// <summary>
         /// 获取指定速度下行驶时长后线中的点
         /// </summary>
-        /// <param name="localtions">线路中的点</param>
+        /// <param name="locations">线路中的点</param>
         /// <param name="startLocation">当前点</param>
         /// <param name="speed">速度，单位km/h</param>
         /// <param name="interval">间隔时间，单位s</param>
         /// <param name="nextIndex">下一个关键点的索引</param>
         /// <returns></returns>
-        public LocationDto GetNextLation(List<LocationDto> localtions, LocationDto startLocation, double speed, int interval, ref int nextIndex)
+        public LocationDto GetNextLocation(List<LocationDto> locations, LocationDto startLocation, double speed, int interval, ref int nextIndex)
         {
-            if (nextIndex >= localtions.Count) return null;
-            var intervalDistance = speed / 3.6 * interval;
-            var nextDistance = intervalDistance;
-            for (; nextIndex < localtions.Count;)
+            if (nextIndex >= locations.Count) return null;
+            var nextDistance = speed / 3.6 * interval;
+            for (; nextIndex < locations.Count;)
             {
-                var distance = CalculateDistanceBetweenLocations(startLocation, localtions[nextIndex]);
+                var distance = CalculateDistanceBetweenLocations(startLocation, locations[nextIndex]);
                 if (distance < nextDistance)
                 {
                     nextDistance -= distance;
-                    startLocation = localtions[nextIndex];
+                    startLocation = locations[nextIndex];
                     nextIndex++;
                     continue;
                 }
-                var endLocation = IntermediaryLocation(startLocation, localtions[nextIndex], nextDistance);
-                distance = CalculateDistanceBetweenLocations(endLocation, localtions[nextIndex]);
-                logger.LogInformation($"当前索引：{nextIndex}，差值{distance}起点[{startLocation.Logintude},{startLocation.Latitude}]终点,[{endLocation.Logintude},{endLocation.Latitude}],第{localtions[nextIndex].Order}个关键点[{localtions[nextIndex].Logintude},{localtions[nextIndex].Latitude}]");
+                var endLocation = IntermediaryLocation(startLocation, locations[nextIndex], nextDistance);
+                distance = CalculateDistanceBetweenLocations(endLocation, locations[nextIndex]);
+                logger.LogDebug($"当前索引：{nextIndex}，差值{distance}起点[{startLocation.Logintude},{startLocation.Latitude}]终点,[{endLocation.Logintude},{endLocation.Latitude}],第{locations[nextIndex].Order}个关键点[{locations[nextIndex].Logintude},{locations[nextIndex].Latitude}]");
                 return endLocation;
             }
             return default;

@@ -23,15 +23,16 @@ namespace Jt808TerminalEmulator.Core.Netty
             data.AsParallel().Select(x => { x.Locations = x.Locations.OrderBy(item => item.Order).ToList(); return x; }).ForAll(x => lines.TryAdd(x.Id, x));
         }
 
-        public LocationDto GetNextLocaltion(string lineId, LocationDto currentLocation, double speed, int interval, ref int nextIndex)
+        public LocationDto GetNextLocation(string lineId, LocationDto currentLocation, double speed, int interval, ref int nextIndex, bool reverse = false)
         {
             if (lines.TryGetValue(lineId, out var line))
             {
                 if (nextIndex == 0)
                 {
-                    return line.Locations[nextIndex++];
+                    nextIndex++;
+                    return reverse ? line.Locations.LastOrDefault() : line.Locations.FirstOrDefault();
                 }
-                return locationInterpolation.GetNextLation(line.Locations, currentLocation, speed, interval, ref nextIndex);
+                return locationInterpolation.GetNextLocation(reverse ? line.Locations.AsQueryable().Reverse().ToList() : line.Locations, currentLocation, speed, interval, ref nextIndex);
             }
             return default;
         }

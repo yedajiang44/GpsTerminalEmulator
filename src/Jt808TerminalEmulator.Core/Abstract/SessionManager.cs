@@ -21,6 +21,11 @@ namespace Jt808TerminalEmulator.Core.Abstract
             }
         }
 
+        public bool Contains(string phoneNumber)
+        {
+            return tcpSessions.TryGetValue(phoneNumber, out _);
+        }
+
         public ITcpClientSession GetTcpClientSession(string phoneNumber)
         {
             tcpSessions.TryGetValue(phoneNumber, out ITcpClientSession session);
@@ -43,6 +48,7 @@ namespace Jt808TerminalEmulator.Core.Abstract
     {
         void Add(ISession session);
         void RemoveById(string sessionId);
+        bool Contains(string simNumber);
         ITcpClientSession GetTcpClientSession(string phoneNumber);
         ITcpClientSession GetTcpClientSessionById(string sessionId);
         IEnumerable<ITcpClientSession> GetTcpClientSessions();
