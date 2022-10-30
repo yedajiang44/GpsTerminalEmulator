@@ -42,18 +42,12 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
                     logger.LogError(e, $"数据解析出现异常，元数据：{msg.ToHexString()}");
             }
         }
-        public override void ChannelInactive(IChannelHandlerContext context)
-        {
-            sessionManager.RemoveById(context.Channel.Id.AsLongText());
-            base.ChannelInactive(context);
-        }
 
         public override void UserEventTriggered(IChannelHandlerContext context, object evt)
         {
             switch (evt)
             {
                 case IdleStateEvent readerIdle when readerIdle.State == IdleState.ReaderIdle:
-                    sessionManager.RemoveById(context.Channel.Id.AsLongText());
                     context.CloseAsync();
                     break;
                 case IdleStateEvent writerIdle when writerIdle.State == IdleState.WriterIdle:

@@ -54,6 +54,7 @@ namespace Jt808TerminalEmulator.Core.Netty
         public async Task<ITcpClientSession> ConnectAsync(string ip, int port, string phoneNumber = null)
         {
             var channel = await bootstrap.ConnectAsync(new DnsEndPoint(ip, port));
+            _ = channel.CloseCompletion.ContinueWith(_ => sessionManager.RemoveById(channel.Id.AsLongText()));
             ITcpClientSession session = new TcpClientSession(serviceProvider) { Channel = channel, PhoneNumber = phoneNumber };
             sessionManager.Add(session);
             return session;
