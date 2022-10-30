@@ -1,6 +1,8 @@
 using System.ComponentModel;
 using GpsPlatform.Infrastructure.Extentions;
+using GpsPlatform.Jt808Protocol.Instruction;
 using Jt808TerminalEmulator.Core;
+using Jt808TerminalEmulator.Core.Netty;
 using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
 using Jt808TerminalEmulator.Model.Enum;
@@ -111,6 +113,22 @@ namespace Jt808TerminalEmulator.Api.Controllers
             var session = await client.GetSession(task.SimNumber);
             var result = await session.StopTask();
             return Ok(new JsonResultDto<bool> { Flag = result, Data = result });
+        }
+
+        [HttpGet("[action]/{id}")]
+        public async Task<IActionResult> Location([FromRoute] string id)
+        {
+            var result = new JsonResultDto<Jt808_0x0200_LocationReport> { Flag = false, Message = "未找到相关链路，请确认任务是否运行中" };
+            var task = await currentservice.Find(x => x.Id == id);
+            var client = await tcpClientFactory.CreateTcpClient();
+            var session = await client.GetSession(task.SimNumber);
+            if (session is ITcpClientSession tcpClientSession)
+            {
+                result.Flag = true;
+                result.Data = session.LastLocation;
+                result.Message = result.Data != null ? null : "找倒链路，但未找到最后定位点";
+            }
+            return Ok(result);
         }
     }
 }

@@ -141,6 +141,7 @@ namespace Jt808TerminalEmulator.Core.Netty
         AlarmSign AlarmSign { get; set; }
 
         double Speed { get; set; }
+        Jt808_0x0200_LocationReport LastLocation { get; }
 
         int Interval { get; set; }
         Task Send(Jt808PackageInfo data);
