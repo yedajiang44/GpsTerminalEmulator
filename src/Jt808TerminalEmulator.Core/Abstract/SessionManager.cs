@@ -41,7 +41,8 @@ namespace Jt808TerminalEmulator.Core.Abstract
         public void RemoveById(string sessionId)
         {
             var session = tcpSessions.Values.FirstOrDefault(x => x.Id == sessionId);
-            tcpSessions.TryRemove(session.PhoneNumber, out session);
+            if (session != null)
+                tcpSessions.TryRemove(session.PhoneNumber, out _);
         }
     }
     public interface ISessionManager
