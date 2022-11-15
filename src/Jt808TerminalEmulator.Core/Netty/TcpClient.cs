@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using DotNetty.Buffers;
@@ -9,6 +8,7 @@ using DotNetty.Handlers.Timeout;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
+using DotNetty.Transport.Libuv;
 using GpsPlatform.Jt808Protocol.PackageInfo;
 using Jt808TerminalEmulator.Core.Abstract;
 using Jt808TerminalEmulator.Core.Netty.Codec;
@@ -20,8 +20,6 @@ namespace Jt808TerminalEmulator.Core.Netty
     internal class TcpClient : ITcpClient
     {
         public string Id { get; set; } = Guid.NewGuid().ToString("N");
-
-        readonly MultithreadEventLoopGroup eventLoopGroup;
         readonly Bootstrap bootstrap;
         readonly ISessionManager sessionManager;
         readonly IServiceProvider serviceProvider;
@@ -31,13 +29,13 @@ namespace Jt808TerminalEmulator.Core.Netty
         {
             this.sessionManager = sessionManager;
             this.serviceProvider = serviceProvider;
-            eventLoopGroup = new MultithreadEventLoopGroup();
-            bootstrap = new Bootstrap().Group(eventLoopGroup)
+            bootstrap = new Bootstrap().Group(new DispatcherEventLoopGroup())
                 .Channel<TcpSocketChannel>()
                 .Option(ChannelOption.TcpNodelay, true)
                 .Option(ChannelOption.SoReuseaddr, true)
                 .Option(ChannelOption.SoKeepalive, true)
                 .Option(ChannelOption.ConnectTimeout, TimeSpan.FromSeconds(300))
+                .Option(ChannelOption.Allocator, UnpooledByteBufferAllocator.Default)
                 .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
                 {
                     var scope = serviceProvider.CreateScope().ServiceProvider;
@@ -52,7 +50,7 @@ namespace Jt808TerminalEmulator.Core.Netty
 
         public async Task<ITcpClientSession> ConnectAsync(string ip, int port, string phoneNumber = null)
         {
-            var channel = await bootstrap.ConnectAsync(Array.Find(Dns.GetHostEntry(ip).AddressList, x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork), port);
+            var channel = await bootstrap.ConnectAsync(Array.Find(Dns.GetHostAddresses(ip), x => x.ToString() == ip || x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork), port);
             _ = channel.CloseCompletion.ContinueWith(_ => sessionManager.RemoveById(channel.Id.AsLongText()));
             ITcpClientSession session = new TcpClientSession(serviceProvider) { Channel = channel, PhoneNumber = phoneNumber };
             sessionManager.Add(session);
