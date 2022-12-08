@@ -39,10 +39,10 @@ var app = builder.Build();
 var services = app.Services.CreateScope().ServiceProvider;
 
 app.UseRouting();
+app.MapControllers();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints => endpoints.MapControllers());
-services.GetService<ILogger<Program>>().LogInformation(Environment.NewLine + FiggleFonts.Standard.Render("H e l l o , J t 8 0 8 !"));
+services.GetService<ILogger<Program>>().LogInformation("{newline}{message}", Environment.NewLine, FiggleFonts.Standard.Render("H e l l o , J t 8 0 8 !"));
 await app.RunAsync();
