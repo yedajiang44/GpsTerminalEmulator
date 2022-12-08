@@ -21,6 +21,7 @@
 - 复制[docker-compose.yml](./docker-compose.yml)内容至刚才新建的`docker-compose.yml`文件中
 
 - 执行`docker-compose up -d`
+  > 如果提示内核优化失败说明你的宿主内核较低，注释掉内核优化参数或使用高版本内核宿主
 
 - 浏览器打开`localhost:4000`
 
@@ -28,7 +29,7 @@
 
 ### 开发环境
 
-- net5.0
+- net7.0
 
 - PostgreSql
 
