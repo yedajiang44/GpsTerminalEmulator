@@ -1,5 +1,5 @@
 #!/bin/sh
-dotnet publish ./src/Jt808TerminalEmulator.Api/Jt808TerminalEmulator.Api.csproj -c Release
+dotnet publish ./src/Jt808TerminalEmulator.Api/Jt808TerminalEmulator.Api.csproj -c Release -o .output
 while true; do
     stty -icanon min 0 time 100
     printf "是否编译镜像(yes or no)?"
