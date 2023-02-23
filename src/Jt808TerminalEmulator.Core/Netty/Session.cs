@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DotNetty.Transport.Channels;
@@ -26,9 +26,9 @@ namespace Jt808TerminalEmulator.Core.Netty
         public Task Send(byte[] data) => Channel.WriteAndFlushAsync(data);
         public Task Send(string data) => Channel.WriteAndFlushAsync(data);
 
-        public void Dispose()
+        public async Task Close()
         {
-            Channel.CloseAsync();
+            await Channel.CloseAsync();
         }
     }
 
@@ -113,16 +113,11 @@ namespace Jt808TerminalEmulator.Core.Netty
             });
             return true;
         });
-        public Task<bool> StopTask() => Task.Run(() =>
-        {
-            cts.Cancel();
-            return true;
-        });
 
-        public void Dispose()
+        public async Task Close()
         {
             if (!cts.IsCancellationRequested) cts.Cancel();
-            Channel.DisconnectAsync();
+            await Channel.CloseAsync();
         }
     }
     public interface IWebSocketSession : ISession
@@ -147,10 +142,10 @@ namespace Jt808TerminalEmulator.Core.Netty
         Task Send(Jt808PackageInfo data);
         Task Send(byte[] data);
         Task<bool> StartTask(string lineId, double speed, int interval, TaskType type = TaskType.Once);
-        Task<bool> StopTask();
     }
-    public interface ISession : IDisposable
+    public interface ISession
     {
         string Id { get; }
+        Task Close();
     }
 }

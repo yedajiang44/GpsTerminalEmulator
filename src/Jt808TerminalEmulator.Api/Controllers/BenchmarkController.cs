@@ -31,9 +31,17 @@ public class BenchmarkController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> IndexAsync(string ip, int port, string lineId, double speed, int interval, TaskType type = TaskType.Once)
     {
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
-        sessionManager.GetTcpClientSessions().ForEach(x => x.StopTask().ContinueWith(_ => x.Dispose()).ContinueWith(x => logger.LogError(x.Exception, "stop error: {message}", x.Exception.Message)));
+        foreach (var session in sessionManager.GetTcpClientSessions())
+        {
+            try
+            {
+                await session.Close();
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "stop error: {message}", e.Message);
+            }
+        }
         var client = await tcpClientFactory.CreateTcpClient();
         var terminals = await terminalService.Query<TerminalFilter>();
         _ = terminals.ConvertAll(async x =>
@@ -57,20 +65,19 @@ public class BenchmarkController : ControllerBase
     }
 
     [HttpGet("[action]")]
-    public IActionResult Stop()
+    public async Task<IActionResult> StopAsync()
     {
-        sessionManager.GetTcpClientSessions().ForEach(async x =>
+        foreach (var session in sessionManager.GetTcpClientSessions())
         {
             try
             {
-                await x.StopTask();
-                x.Dispose();
+                await session.Close();
             }
             catch (Exception e)
             {
                 logger.LogError(e, "stop error: {message}", e.Message);
             }
-        });
+        }
         return Ok(new JsonResultDto<bool> { Flag = true });
     }
 

@@ -25,9 +25,9 @@ namespace Jt808TerminalEmulator.Core.Netty
         {
             if (Sessions.TryRemove(sessionId, out var session))
             {
-                session.Dispose();
+                session.Close().GetAwaiter().GetResult();
                 return true;
-            };
+            }
             return default;
         }
 

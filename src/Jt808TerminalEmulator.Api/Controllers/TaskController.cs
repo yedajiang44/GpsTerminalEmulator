@@ -111,8 +111,8 @@ namespace Jt808TerminalEmulator.Api.Controllers
             var task = await currentservice.Find(x => x.Id == id);
             var client = await tcpClientFactory.CreateTcpClient();
             var session = await client.GetSession(task.SimNumber);
-            var result = await session.StopTask();
-            return Ok(new JsonResultDto<bool> { Flag = result, Data = result });
+            await session?.Close();
+            return Ok(new JsonResultDto<bool> { Flag = true, Data = true });
         }
 
         [HttpGet("[action]/{id}")]
