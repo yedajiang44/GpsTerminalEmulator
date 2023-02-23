@@ -16,7 +16,11 @@ namespace Jt808TerminalEmulator.Core.Abstract
             switch (session)
             {
                 case ITcpClientSession tcpSession:
-                    tcpSessions.AddOrUpdate(tcpSession.PhoneNumber, tcpSession, (key, value) => tcpSession);
+                    tcpSessions.AddOrUpdate(tcpSession.PhoneNumber, tcpSession, (key, value) =>
+                    {
+                        value?.Close().GetAwaiter().GetResult();
+                        return tcpSession;
+                    });
                     break;
             }
         }
@@ -31,6 +35,13 @@ namespace Jt808TerminalEmulator.Core.Abstract
             tcpSessions.TryGetValue(phoneNumber, out ITcpClientSession session);
             return session;
         }
+
+        public bool TryGetTcpClientSession(string phoneNumber, out ITcpClientSession session)
+        {
+            session = GetTcpClientSession(phoneNumber);
+            return session != null;
+        }
+
         public ITcpClientSession GetTcpClientSessionById(string sessionId)
         {
             return tcpSessions.Values.FirstOrDefault(x => x.Id == sessionId);
@@ -51,6 +62,7 @@ namespace Jt808TerminalEmulator.Core.Abstract
         void RemoveById(string sessionId);
         bool Contains(string simNumber);
         ITcpClientSession GetTcpClientSession(string phoneNumber);
+        bool TryGetTcpClientSession(string phoneNumber, out ITcpClientSession session);
         ITcpClientSession GetTcpClientSessionById(string sessionId);
         IEnumerable<ITcpClientSession> GetTcpClientSessions();
     }
