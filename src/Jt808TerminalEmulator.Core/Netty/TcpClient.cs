@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -50,9 +50,7 @@ namespace Jt808TerminalEmulator.Core.Netty
 
         public async Task<ITcpClientSession> ConnectAsync(string ip, int port, string phoneNumber)
         {
-        public async Task<ITcpClientSession> ConnectAsync(string ip, int port, string phoneNumber = null)
-        {
-            var channel = await bootstrap.ConnectAsync(Array.Find(Dns.GetHostAddresses(ip), x => x.ToString() == ip || x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork), port);
+            if (sessionManager.TryGetTcpClientSession(phoneNumber, out var session)) await session.Close();
             IChannel channel = null;
 
             try
