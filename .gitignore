@@ -339,7 +339,17 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 
-.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
 
-# database migrations
-src/Jt808TerminalEmulator.Data/Migrations
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+.output
