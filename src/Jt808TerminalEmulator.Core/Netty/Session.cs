@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DotNetty.Transport.Channels;
@@ -105,7 +105,7 @@ namespace Jt808TerminalEmulator.Core.Netty
                         Header = new Header { PhoneNumber = PhoneNumber },
                         Body = LastLocation
                     });
-                    await Task.Delay(TimeSpan.FromSeconds(Interval));
+                    await Task.Delay(TimeSpan.FromSeconds(Interval), cts.Token);
                 }
                 Speed = 0;
                 Status.ACC = false;
