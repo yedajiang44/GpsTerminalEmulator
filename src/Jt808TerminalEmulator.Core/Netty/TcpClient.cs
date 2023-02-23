@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -48,11 +48,37 @@ namespace Jt808TerminalEmulator.Core.Netty
                 }));
         }
 
+        public async Task<ITcpClientSession> ConnectAsync(string ip, int port, string phoneNumber)
+        {
         public async Task<ITcpClientSession> ConnectAsync(string ip, int port, string phoneNumber = null)
         {
             var channel = await bootstrap.ConnectAsync(Array.Find(Dns.GetHostAddresses(ip), x => x.ToString() == ip || x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork), port);
+            IChannel channel = null;
+
+            try
+            {
+                channel = await bootstrap.ConnectAsync(ip, port);
+            }
+            catch
+            {
+                foreach (var x in await Dns.GetHostAddressesAsync(ip))
+                {
+                    try
+                    {
+                        channel = await bootstrap.ConnectAsync(x, port);
+                        break;
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+
+            if (channel == null)
+                throw new Exception($"Unable to connect {ip}:{port}, please confirm and try again.");
+
             _ = channel.CloseCompletion.ContinueWith(_ => sessionManager.RemoveById(channel.Id.AsLongText()));
-            ITcpClientSession session = new TcpClientSession(serviceProvider) { Channel = channel, PhoneNumber = phoneNumber };
+            session = new TcpClientSession(serviceProvider) { Channel = channel, PhoneNumber = phoneNumber };
             sessionManager.Add(session);
             return session;
         }
