@@ -5,38 +5,40 @@ using Jt808TerminalEmulator.Api.Configurations;
 using Jt808TerminalEmulator.Core;
 using Jt808TerminalEmulator.Service;
 using Microsoft.EntityFrameworkCore;
-using NLog.Extensions.Logging;
+using NLog.Web;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Host.ConfigureServices((hostContext, services) =>
-{
-    var Configuration = hostContext.Configuration;
-    services.AddHostedService<InitHosted>()
-    .AddJsonWebToken(Configuration)
-    .UseJt808TerminalEmulator(Configuration.GetSection("gateway"))
-    .UseServices()
-    .AddSwagger()
-    .AddLogging(logger => logger.ClearProviders().AddNLog(new NLogLoggingConfiguration(Configuration.GetSection("NLog"))))
-    .AddDbContextPool<EmulatorDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), builder => builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)))
-    // .AddAuthorization(options =>
-    // {
-    //     options.AddPolicy("Client", policy => policy.RequireRole("Client").Build());
-    //     options.AddPolicy("Admin", policy => policy.RequireRole("Admin").Build());
-    //     //这个是并的关系
-    //     options.AddPolicy("AdminAndClient", policy => policy.RequireRole("Admin,Client").Build());
-    //     //这个是或的关系
-    //     options.AddPolicy("SystemOrAdmin", policy => policy.RequireRole("Admin", "System").Build());
-    // })
-    .AddControllers()
-    .AddJsonDateTimeConverters();
-});
+
+builder.Services
+.AddHostedService<InitHosted>()
+.AddJsonWebToken(builder.Configuration)
+.UseJt808TerminalEmulator(builder.Configuration.GetSection("gateway"))
+.UseServices()
+.AddSwagger()
+.AddDbContextPool<EmulatorDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), builder => builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)))
+// .AddAuthorization(options =>
+// {
+//     options.AddPolicy("Client", policy => policy.RequireRole("Client").Build());
+//     options.AddPolicy("Admin", policy => policy.RequireRole("Admin").Build());
+//     //这个是并的关系
+//     options.AddPolicy("AdminAndClient", policy => policy.RequireRole("Admin,Client").Build());
+//     //这个是或的关系
+//     options.AddPolicy("SystemOrAdmin", policy => policy.RequireRole("Admin", "System").Build());
+// })
+.AddControllers()
+.AddJsonDateTimeConverters();
+
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
+
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
     app.UseSwaggerAndUI();
 }
-var services = app.Services.CreateScope().ServiceProvider;
+var services = app.Services;
 
 app.UseRouting();
 app.MapControllers();
