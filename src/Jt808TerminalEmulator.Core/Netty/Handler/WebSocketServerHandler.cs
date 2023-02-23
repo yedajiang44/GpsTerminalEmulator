@@ -2,14 +2,14 @@
 using System.Text;
 using System.Threading.Tasks;
 using DotNetty.Buffers;
-using static DotNetty.Codecs.Http.HttpVersion;
-using static DotNetty.Codecs.Http.HttpResponseStatus;
 using DotNetty.Codecs.Http;
 using DotNetty.Codecs.Http.WebSockets;
 using DotNetty.Common.Utilities;
+using DotNetty.Handlers.Timeout;
 using DotNetty.Transport.Channels;
 using Microsoft.Extensions.Logging;
-using DotNetty.Handlers.Timeout;
+using static DotNetty.Codecs.Http.HttpResponseStatus;
+using static DotNetty.Codecs.Http.HttpVersion;
 
 namespace Jt808TerminalEmulator.Core.Netty.Handler
 {
@@ -17,14 +17,13 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
     {
         readonly ILogger logger;
         WebSocketServerHandshaker handshaker;
-        WebSocketSessionManager sessionManager;
+        private readonly WebSocketSessionManager sessionManager;
 
         public WebSocketServerHandler(ILogger<WebSocketServerHandler> logger, WebSocketSessionManager sessionManager)
         {
             this.logger = logger;
             this.sessionManager = sessionManager;
         }
-
 
         protected override void ChannelRead0(IChannelHandlerContext ctx, object msg)
         {
@@ -75,7 +74,6 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
                 return;
             }
 
-
             //图标资源
             if ("/favicon.ico".Equals(req.Uri))
             {
@@ -115,7 +113,7 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
                 case PingWebSocketFrame ping:
                     ctx.WriteAndFlushAsync(new PongWebSocketFrame((IByteBuffer)ping.Content.Retain()));
                     break;
-                case TextWebSocketFrame text:
+                case TextWebSocketFrame:
                     sessionManager.UpdateLastActiveTime(ctx.Channel.Id.AsLongText());
                     break;
                 case BinaryWebSocketFrame binary:
@@ -125,7 +123,7 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
             }
         }
 
-        void SendHttpResponse(IChannelHandlerContext ctx, IFullHttpRequest req, IFullHttpResponse res)
+        private static void SendHttpResponse(IChannelHandlerContext ctx, IFullHttpRequest req, IFullHttpResponse res)
         {
             // 如果响应getStatus代码不正确，则生成错误页面
             if (res.Status.Code != 200)
@@ -140,11 +138,11 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
             Task task = ctx.Channel.WriteAndFlushAsync(res);
             if (!HttpUtil.IsKeepAlive(req) || res.Status.Code != 200)
             {
-                task.ContinueWith((t, c) => ((IChannelHandlerContext)c).CloseAsync(), ctx, TaskContinuationOptions.ExecuteSynchronously);
+                task.ContinueWith((_, c) => ((IChannelHandlerContext)c).CloseAsync(), ctx, TaskContinuationOptions.ExecuteSynchronously);
             }
         }
 
-        string GetWebSocketLocation(IFullHttpRequest req)
+        private static string GetWebSocketLocation(IFullHttpRequest req)
         {
             req.Headers.TryGet(HttpHeaderNames.Host, out ICharSequence value);
             return "ws://" + value.ToString();

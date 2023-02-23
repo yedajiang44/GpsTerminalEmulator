@@ -21,6 +21,7 @@ namespace Jt808TerminalEmulator.Data.Entity
         /// 基准点数量
         /// </summary>
         public int LocationCount { get; set; }
+        /// <summary>
         /// 备注
         /// </summary>
         public string Note { get; set; }

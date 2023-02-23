@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace Jt808TerminalEmulator
 {
@@ -8,7 +8,6 @@ namespace Jt808TerminalEmulator
     {
         public EmulatorDbContext(DbContextOptions<EmulatorDbContext> options) : base(options)
         {
-
         }
         /// <summary>
         /// OnModelCreating

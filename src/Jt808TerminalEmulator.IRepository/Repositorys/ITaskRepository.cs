@@ -25,10 +25,7 @@ namespace Jt808TerminalEmulator.Repository.Repositorys
             var result = await dbContext.Set<TaskEntity>().AddAsync(entity);
             await dbContext.SaveChangesAsync();
             entity = await dbContext.Set<TaskEntity>().FindAsync(entity.Id);
-            dbContext.Set<TerminalEntity>().Where(x => terminals.Contains(x.Id)).ToList().ForEach(x =>
-            {
-                entity.Terminals.Add(x);
-            });
+            dbContext.Set<TerminalEntity>().Where(x => terminals.Contains(x.Id)).ToList().ForEach(x => entity.Terminals.Add(x));
             return result;
         }
     }

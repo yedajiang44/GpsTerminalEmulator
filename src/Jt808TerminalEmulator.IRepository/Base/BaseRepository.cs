@@ -53,20 +53,14 @@ namespace Jt808TerminalEmulator.Repository.Base
         public async virtual Task<List<T>> Query(List<(bool ifExpression, Expression<Func<T, bool>> whereExpression)> whereLambdas = null, string order = null)
         {
             var query = BaseQuery();
-            whereLambdas?.ForEach(x =>
-            {
-                query = query.WhereIf(x.ifExpression, x.whereExpression);
-            });
+            whereLambdas?.ForEach(x => query = query.WhereIf(x.ifExpression, x.whereExpression));
             return await query.ToListAsync();
         }
 
         public async virtual Task<Tuple<List<T>, long>> QueryWithPage(List<(bool ifExpression, Expression<Func<T, bool>> whereExpression)> whereLambdas, int pageIndex, int pageSize, string order)
         {
             var query = BaseQuery();
-            whereLambdas?.ForEach(x =>
-            {
-                query = query.WhereIf(x.ifExpression, x.whereExpression);
-            });
+            whereLambdas?.ForEach(x => query = query.WhereIf(x.ifExpression, x.whereExpression));
             var total = await query.LongCountAsync();
             if (order != null)
             {

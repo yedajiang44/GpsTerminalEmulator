@@ -1,12 +1,12 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Threading.Tasks;
+using AutoMapper;
 using Bogus;
 using Jt808TerminalEmulator.Data.Entity;
 using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
 using Jt808TerminalEmulator.Repository.Repositorys;
 using Jt808TerminalEmulator.Repository.UnitOfWork;
-using System;
-using System.Threading.Tasks;
 
 namespace Jt808TerminalEmulator.Service
 {
@@ -18,7 +18,7 @@ namespace Jt808TerminalEmulator.Service
 
         public async Task<int> AddRandom(int count)
         {
-            await (currentRepository as ITerminalRepository).AddRandom(count);
+            await (currentRepository as ITerminalRepository)!.AddRandom(count);
             return await unitOfWork.SaveChangesAsync();
         }
     }

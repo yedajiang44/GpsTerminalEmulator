@@ -13,7 +13,7 @@ namespace Jt808TerminalEmulator.Data.Entity
         /// 排序
         /// </summary>
         public int Order { get; set; }
-        
+
         /// <summary>
         /// 经度
         /// </summary>

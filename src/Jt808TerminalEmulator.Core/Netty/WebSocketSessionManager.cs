@@ -10,13 +10,8 @@ namespace Jt808TerminalEmulator.Core.Netty
 {
     public class WebSocketSessionManager
     {
-        private readonly ILogger logger;
         private ConcurrentDictionary<string, IWebSocketSession> Sessions { get; } = new ConcurrentDictionary<string, IWebSocketSession>();
         public int SessionCount => Sessions.Count;
-        public WebSocketSessionManager(ILogger<WebSocketSessionManager> logger)
-        {
-            this.logger = logger;
-        }
 
         public IEnumerable<IWebSocketSession> GetAllSessions() => Sessions.Values;
 
@@ -45,13 +40,7 @@ namespace Jt808TerminalEmulator.Core.Netty
 
         public Task TrySendAll(string data)
         {
-            return Task.Run(() =>
-            {
-                Sessions.Values.AsParallel().ForEach(x =>
-                {
-                    Send(x.Id, data);
-                });
-            });
+            return Task.Run(() => Sessions.Values.AsParallel().ForEach(x => Send(x.Id, data)));
         }
 
         public Task UpdateLastActiveTime(string sessionId)

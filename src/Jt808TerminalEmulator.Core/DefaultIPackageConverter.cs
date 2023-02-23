@@ -10,7 +10,7 @@ namespace Jt808TerminalEmulator.Core
     public class DefaultIPackageConverter : IPackageConverter
     {
         // TODO:如果想使用自己的转换器，只需要更换此处即可
-        PackageConverter packageConverter;
+        private readonly PackageConverter packageConverter;
         public DefaultIPackageConverter(PackageConverter packageConverter)
         {
             this.packageConverter = packageConverter;

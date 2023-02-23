@@ -15,14 +15,12 @@ namespace Jt808TerminalEmulator.Api.Controllers
     public class SendJt808MessageController : ControllerBase
     {
         private readonly ITcpClientFactory tcpClientFactory;
-        private readonly ITcpClientManager tcpClientManager;
         private readonly ITerminalService terminalService;
         private readonly ILogger logger;
 
-        public SendJt808MessageController(ITcpClientFactory tcpClientFactory, ITcpClientManager tcpClientManager, ITerminalService terminalService, ILogger<SendJt808MessageController> logger)
+        public SendJt808MessageController(ITcpClientFactory tcpClientFactory, ITerminalService terminalService, ILogger<SendJt808MessageController> logger)
         {
             this.tcpClientFactory = tcpClientFactory;
-            this.tcpClientManager = tcpClientManager;
             this.terminalService = terminalService;
             this.logger = logger;
         }

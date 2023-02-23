@@ -23,7 +23,7 @@ namespace Jt808TerminalEmulator.Model.Filters
         /// 速度
         /// </summary>
         public int Speed { get; set; }
-        public override List<(bool ifExpression, Expression<Func<TaskDto, bool>> whereExpression)> WhereLambda() => new List<(bool ifExpression, Expression<Func<TaskDto, bool>> whereExpression)>
+        public override List<(bool ifExpression, Expression<Func<TaskDto, bool>> whereExpression)> WhereLambda() => new()
         {
             (!string.IsNullOrWhiteSpace(Name),x=>x.Name.Contains(Name)),
             (!string.IsNullOrWhiteSpace(LineName),x=>x.LineName.Contains(LineName)),

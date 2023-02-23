@@ -24,7 +24,6 @@ namespace Jt808TerminalEmulator.Core.Netty
         readonly ISessionManager sessionManager;
         readonly IServiceProvider serviceProvider;
 
-
         public TcpClient(IServiceProvider serviceProvider, ISessionManager sessionManager)
         {
             this.sessionManager = sessionManager;

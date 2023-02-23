@@ -72,7 +72,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
         [HttpDelete("[action]")]
         public async Task<IActionResult> DeleteAll()
         {
-            var result = await terminalService.Delete(x => true) > 0;
+            var result = await terminalService.Delete(_ => true) > 0;
             return Ok(new JsonResultDto<bool>
             {
                 Data = result,

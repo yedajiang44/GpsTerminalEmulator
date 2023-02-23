@@ -13,16 +13,14 @@ namespace Jt808TerminalEmulator.Api.Controllers
     public class SessionController : ControllerBase
     {
         private readonly ITcpClientManager tcpClientManager;
-        private readonly ITerminalService terminalService;
 
-        public SessionController(ITcpClientManager tcpClientManager, ITerminalService terminalService)
+        public SessionController(ITcpClientManager tcpClientManager)
         {
             this.tcpClientManager = tcpClientManager;
-            this.terminalService = terminalService;
         }
 
         [HttpGet]
-        public IActionResult IndexAsync()
+        public IActionResult Index()
         {
             try
             {

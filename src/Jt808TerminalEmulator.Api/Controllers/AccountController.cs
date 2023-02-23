@@ -16,12 +16,10 @@ namespace Jt808TerminalEmulator.Api.Controllers
     public class AccountController : ControllerBase
     {
         readonly JwtSettings jwtSettings;
-        readonly ILogger logger;
 
-        public AccountController(ILogger<AccountController> logger, IOptions<JwtSettings> jwtSettingIOptions)
+        public AccountController(IOptions<JwtSettings> jwtSettingIOptions)
         {
-            this.jwtSettings = jwtSettingIOptions.Value;
-            this.logger = logger;
+            jwtSettings = jwtSettingIOptions.Value;
         }
 
         [AllowAnonymous]
@@ -41,7 +39,7 @@ namespace Jt808TerminalEmulator.Api.Controllers
                     LoginName = dto.UserName,
                     Email = "602830483@qq.com",
                     RealName = "yedajiang44",
-                    UserRoles = new List<UserRoleDto> { }
+                    UserRoles = new List<UserRoleDto>()
                 };
                 var claims = new List<Claim>()
                 {

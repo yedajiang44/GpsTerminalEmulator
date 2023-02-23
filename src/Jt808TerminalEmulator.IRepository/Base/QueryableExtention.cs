@@ -8,7 +8,6 @@ namespace Jt808TerminalEmulator.Repository.Base
 {
     public static class QueryableExtention
     {
-
         /// <summary>
         /// WhereIf[在condition为true的情况下应用Where表达式]
         /// </summary>

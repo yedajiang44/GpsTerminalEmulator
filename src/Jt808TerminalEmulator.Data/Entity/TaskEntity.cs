@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Jt808TerminalEmulator.Data.Entity
 {
@@ -10,16 +8,16 @@ namespace Jt808TerminalEmulator.Data.Entity
         /// 别名
         /// </summary>
         public string Name { get; set; }
-        
+
         /// <summary>
         /// 定位上报间隔，单位：秒
         /// </summary>
         public int Interval { get; set; }
+
         /// <summary>
         /// 速度，单位：千米/小时
         /// </summary>
         public double Speed { get; set; }
-        /// <summary>
 
         /// <summary>
         /// 状态

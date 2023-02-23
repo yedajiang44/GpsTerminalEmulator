@@ -16,7 +16,7 @@ namespace Jt808TerminalEmulator.Model.Filters
         /// </summary>
         public string Name { get; set; }
 
-        public override List<(bool ifExpression, Expression<Func<LineDto, bool>> whereExpression)> WhereLambda() => new List<(bool ifExpression, Expression<Func<LineDto, bool>> whereExpression)>
+        public override List<(bool ifExpression, Expression<Func<LineDto, bool>> whereExpression)> WhereLambda() => new()
         {
             (!string.IsNullOrWhiteSpace(Name),x=>x.Name.Contains(Name))
         };

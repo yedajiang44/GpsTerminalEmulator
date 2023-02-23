@@ -13,7 +13,7 @@ namespace Jt808TerminalEmulator.Core
     /// </summary>
     public class LocationInterpolation
     {
-        ILogger logger;
+        private readonly ILogger logger;
         public LocationInterpolation(ILogger<LocationInterpolation> logger)
         {
             this.logger = logger;
@@ -28,7 +28,7 @@ namespace Jt808TerminalEmulator.Core
         /// <returns></returns>
         public double DegToRad(double deg)
         {
-            return (deg * pi / 180);
+            return deg * pi / 180;
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Jt808TerminalEmulator.Core
         /// <returns></returns>
         public double RadToDeg(double rad)
         {
-            return (rad * 180 / pi);
+            return rad * 180 / pi;
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Jt808TerminalEmulator.Core
             var deltaLon = DegToRad(endPoint.Logintude - startPoint.Logintude);
 
             var y = Math.Sin(deltaLon) * Math.Cos(lat2);
-            var x = Math.Cos(lat1) * Math.Sin(lat2) - Math.Sin(lat1) * Math.Cos(lat2) * Math.Cos(deltaLon);
+            var x = (Math.Cos(lat1) * Math.Sin(lat2)) - (Math.Sin(lat1) * Math.Cos(lat2) * Math.Cos(deltaLon));
             var bearing = Math.Atan2(y, x);
 
             // 由于atan2返回的值介于-180和+180之间，因此我们需要将其转换为0-360度
@@ -70,16 +70,15 @@ namespace Jt808TerminalEmulator.Core
         /// <returns></returns>
         public LocationDto CalculateDestinationLocation(LocationDto point, double bearing, double distance)
         {
-
             distance /= radius; // 转换为弧度的角距离
             bearing = DegToRad(bearing); // 将方位角转换为弧度
 
             var lat1 = DegToRad(point.Latitude);
             var lon1 = DegToRad(point.Logintude);
 
-            var lat2 = Math.Asin(Math.Sin(lat1) * Math.Cos(distance) + Math.Cos(lat1) * Math.Sin(distance) * Math.Cos(bearing));
-            var lon2 = lon1 + Math.Atan2(Math.Sin(bearing) * Math.Sin(distance) * Math.Cos(lat1), Math.Cos(distance) - Math.Sin(lat1) * Math.Sin(lat2));
-            lon2 = (lon2 + 3 * pi) % (2 * pi) - pi; // 标准化为-180 <-> +180度
+            var lat2 = Math.Asin((Math.Sin(lat1) * Math.Cos(distance)) + (Math.Cos(lat1) * Math.Sin(distance) * Math.Cos(bearing)));
+            var lon2 = lon1 + Math.Atan2(Math.Sin(bearing) * Math.Sin(distance) * Math.Cos(lat1), Math.Cos(distance) - (Math.Sin(lat1) * Math.Sin(lat2)));
+            lon2 = ((lon2 + (3 * pi)) % (2 * pi)) - pi; // 标准化为-180 <-> +180度
 
             return new LocationDto { Latitude = RadToDeg(lat2), Logintude = RadToDeg(lon2) };
         }
@@ -92,7 +91,6 @@ namespace Jt808TerminalEmulator.Core
         /// <returns></returns>
         public double CalculateDistanceBetweenLocations(LocationDto startPoint, LocationDto endPoint)
         {
-
             var lat1 = DegToRad(startPoint.Latitude);
             var lon1 = DegToRad(startPoint.Logintude);
 
@@ -102,10 +100,10 @@ namespace Jt808TerminalEmulator.Core
             var deltaLat = lat2 - lat1;
             var deltaLon = lon2 - lon1;
 
-            var a = Math.Sin(deltaLat / 2) * Math.Sin(deltaLat / 2) + Math.Cos(lat1) * Math.Cos(lat2) * Math.Sin(deltaLon / 2) * Math.Sin(deltaLon / 2);
+            var a = (Math.Sin(deltaLat / 2) * Math.Sin(deltaLat / 2)) + (Math.Cos(lat1) * Math.Cos(lat2) * Math.Sin(deltaLon / 2) * Math.Sin(deltaLon / 2));
             var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
 
-            return (radius * c);
+            return radius * c;
         }
 
         /// <summary>
@@ -161,7 +159,7 @@ namespace Jt808TerminalEmulator.Core
             alldistance = 0d;
             var locations = new List<LocationDto>
             {
-                dto.Locations.First()
+                dto.Locations[0]
             };
             var nextDistance = intervalDistance;
             var startLocation = locations.Last();

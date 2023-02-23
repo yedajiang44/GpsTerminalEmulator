@@ -8,7 +8,7 @@ namespace Jt808TerminalEmulator.Core.Abstract
     public class SessionManager : ISessionManager
     {
         // key为终端卡号
-        readonly ConcurrentDictionary<string, ITcpClientSession> tcpSessions = new ConcurrentDictionary<string, ITcpClientSession>();
+        readonly ConcurrentDictionary<string, ITcpClientSession> tcpSessions = new();
 
         // key为链接标识
         public void Add(ISession session)
@@ -16,7 +16,7 @@ namespace Jt808TerminalEmulator.Core.Abstract
             switch (session)
             {
                 case ITcpClientSession tcpSession:
-                    tcpSessions.AddOrUpdate(tcpSession.PhoneNumber, tcpSession, (key, value) =>
+                    tcpSessions.AddOrUpdate(tcpSession.PhoneNumber, tcpSession, (_, value) =>
                     {
                         value?.Close().GetAwaiter().GetResult();
                         return tcpSession;

@@ -1,4 +1,9 @@
-﻿using DotNetty.Handlers.Timeout;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DotNetty.Handlers.Timeout;
 using DotNetty.Transport.Channels;
 using GpsPlatform.Infrastructure.Extentions;
 using GpsPlatform.Jt808Protocol;
@@ -6,11 +11,6 @@ using GpsPlatform.Jt808Protocol.Instruction;
 using GpsPlatform.Jt808Protocol.PackageInfo;
 using Jt808TerminalEmulator.Core.Abstract;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Jt808TerminalEmulator.Core.Netty.Handler
 {
@@ -34,7 +34,6 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
                 var package = packageConverter.Deserialize<Jt808PackageInfo>(msg);
                 if (logger.IsEnabled(LogLevel.Trace))
                     logger.LogTrace($"解析成功--->卡号：{package.Header.PhoneNumber} ，消息：{msg.ToHexString()}");
-
             }
             catch (Exception e)
             {
@@ -53,6 +52,7 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
                 case IdleStateEvent writerIdle when writerIdle.State == IdleState.WriterIdle:
                     var session = sessionManager.GetTcpClientSessions().FirstOrDefault(x => x.Id == context.Channel.Id.AsLongText());
                     if (session != default)
+                    {
                         context.WriteAndFlushAsync(new Jt808PackageInfo
                         {
                             Header = new Header
@@ -61,6 +61,8 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
                             },
                             Body = new Jt808_0x0002_Heartbeat()
                         });
+                    }
+
                     break;
             }
 

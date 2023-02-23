@@ -14,6 +14,5 @@ namespace Jt808TerminalEmulator.Model.Dtos
         /// 密码
         /// </summary>
         public string Password { get; set; }
-
     }
 }

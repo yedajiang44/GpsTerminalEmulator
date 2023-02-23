@@ -66,14 +66,14 @@ namespace Jt808TerminalEmulator.Service
         public async virtual Task<List<TDto>> Query<TFilter>(TFilter filter) where TFilter : BaseFilter<TDto>
         {
             // TODO 排序
-            var entitys = await currentRepository.Query(filter?.WhereLambda().Select(x => (x.ifExpression, mapper.MapExpression<Expression<Func<TEntity, bool>>>(x.whereExpression))).ToList());
+            var entitys = await currentRepository.Query(filter?.WhereLambda().ConvertAll(x => (x.ifExpression, mapper.MapExpression<Expression<Func<TEntity, bool>>>(x.whereExpression))));
             return mapper.Map<List<TDto>>(entitys);
         }
 
         public async virtual Task<PageResultDto<TDto>> QueryWithPage<TFilter>(TFilter filter) where TFilter : BaseFilter<TDto>
         {
             // TODO 排序
-            var (entitys, total) = await currentRepository.QueryWithPage(filter?.WhereLambda().Select(x => (x.ifExpression, mapper.MapExpression<Expression<Func<TEntity, bool>>>(x.whereExpression))).ToList(), filter?.Index ?? 1, filter?.Size ?? 20);
+            var (entitys, total) = await currentRepository.QueryWithPage(filter?.WhereLambda().ConvertAll(x => (x.ifExpression, mapper.MapExpression<Expression<Func<TEntity, bool>>>(x.whereExpression))), filter?.Index ?? 1, filter?.Size ?? 20);
             return new PageResultDto<TDto>
             {
                 List = mapper.Map<List<TDto>>(entitys),

@@ -7,7 +7,7 @@ namespace Jt808TerminalEmulator.Repository.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
-        public EmulatorDbContext DbContext { get; private set; }
+        public EmulatorDbContext DbContext { get; }
 
         public UnitOfWork(EmulatorDbContext dbContext)
         {

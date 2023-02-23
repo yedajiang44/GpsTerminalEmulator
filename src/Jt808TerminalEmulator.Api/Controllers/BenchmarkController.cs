@@ -15,14 +15,12 @@ public class BenchmarkController : ControllerBase
 {
     private readonly ISessionManager sessionManager;
     private readonly ITcpClientFactory tcpClientFactory;
-    private readonly ITcpClientManager tcpClientManager;
     private readonly ITerminalService terminalService;
     private readonly ILogger logger;
 
-    public BenchmarkController(ITcpClientFactory tcpClientFactory, ITcpClientManager tcpClientManager, ITerminalService terminalService, ILogger<BenchmarkController> logger, ISessionManager sessionManager)
+    public BenchmarkController(ITcpClientFactory tcpClientFactory, ITerminalService terminalService, ILogger<BenchmarkController> logger, ISessionManager sessionManager)
     {
         this.tcpClientFactory = tcpClientFactory;
-        this.tcpClientManager = tcpClientManager;
         this.terminalService = terminalService;
         this.logger = logger;
         this.sessionManager = sessionManager;

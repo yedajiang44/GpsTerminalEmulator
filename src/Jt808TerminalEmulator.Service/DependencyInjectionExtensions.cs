@@ -17,9 +17,9 @@ namespace Jt808TerminalEmulator.Service
                 {
                     services.AddScoped(service, x.Implementation);
                 }
-            };
+            }
             //通过反射，批量取出需要注入的接口和实现类
-            foreach (var x in typeof(DependencyInjectionExtensions).Assembly.GetTypes().Where(x => x.Namespace != null && x.Namespace.StartsWith("Jt808TerminalEmulator.Servic") && x.GetInterfaces().Any(x => x.Name.EndsWith("Service"))).Select(x => new { Implementation = x, Services = x.GetInterfaces() }))
+            foreach (var x in typeof(DependencyInjectionExtensions).Assembly.GetTypes().Where(x => x.Namespace?.StartsWith("Jt808TerminalEmulator.Servic") == true && x.GetInterfaces().Any(x => x.Name.EndsWith("Service"))).Select(x => new { Implementation = x, Services = x.GetInterfaces() }))
             {
                 foreach (var service in x.Services)
                 {

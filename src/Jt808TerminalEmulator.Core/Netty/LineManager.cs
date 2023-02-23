@@ -7,13 +7,13 @@ namespace Jt808TerminalEmulator.Core.Netty
 {
     public class LineManager
     {
-        LocationInterpolation locationInterpolation;
-        ConcurrentDictionary<string, LineDto> lines = new ConcurrentDictionary<string, LineDto>();
+        private readonly LocationInterpolation locationInterpolation;
+        private readonly ConcurrentDictionary<string, LineDto> lines = new();
         public LineManager(LocationInterpolation locationInterpolation)
         {
             this.locationInterpolation = locationInterpolation;
         }
-        public void Add(LineDto line) => lines.AddOrUpdate(line.Id, line, (key, value) => line);
+        public void Add(LineDto line) => lines.AddOrUpdate(line.Id, line, (_, __) => line);
         public void Remove(string lineId) => lines.TryRemove(lineId, out _);
         public void Clear() => lines.Clear();
 
