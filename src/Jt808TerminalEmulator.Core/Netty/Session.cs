@@ -3,12 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotNetty.Transport.Channels;
 using GpsPlatform.Jt808Protocol.Instruction;
-using GpsPlatform.Jt808Protocol.Instruction.LocationReportInformation.Basic;
 using GpsPlatform.Jt808Protocol.PackageInfo;
 using Jt808TerminalEmulator.Model.Dtos;
 using Jt808TerminalEmulator.Model.Enum;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using static GpsPlatform.Jt808Protocol.Instruction.Jt808_0x0200_LocationReport;
 
 namespace Jt808TerminalEmulator.Core.Netty
 {
@@ -39,11 +39,13 @@ namespace Jt808TerminalEmulator.Core.Netty
 
         public string Id => Channel?.Id.AsLongText();
 
+        public bool Logged { get; set; }
+
         public Jt808_0x0200_LocationReport LastLocation { get; set; }
 
-        public Status Status { get; set; } = new Status(0);
+        public Status Status { get; set; } = new Status(1);
 
-        public AlarmSign AlarmSign { get; set; } = new AlarmSign(0);
+        public Alarm Alarm { get; set; } = new Alarm(0);
 
         public double Speed { get; set; }
 
@@ -59,10 +61,26 @@ namespace Jt808TerminalEmulator.Core.Netty
 
         private readonly LineManager lineManager;
 
-        public TcpClientSession(IServiceProvider serviceProvider)
+        public TcpClientSession(IServiceProvider serviceProvider, IChannel channel, string phoneNumber)
         {
-            logger = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<ILogger<TcpClientSession>>();
-            lineManager = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<LineManager>();
+            var provider = serviceProvider.CreateScope().ServiceProvider;
+            logger = provider.GetRequiredService<ILogger<TcpClientSession>>();
+            lineManager = provider.GetRequiredService<LineManager>();
+            Channel = channel;
+            PhoneNumber = phoneNumber;
+
+            Send(new Jt808PackageInfo
+            {
+                Header = new Header { PhoneNumber = PhoneNumber },
+                Body = new Jt808_0x0100_Register
+                {
+                    ManufacturerId = "",
+                    TerminalModel = "",
+                    TerminalId = phoneNumber,
+                    //TODO: 查询并赋值车牌号
+                    VehicleIdentification = ""
+                }
+            });
         }
 
         public Task<bool> StartTask(string lineId, double speed, int interval, TaskType type) => Task.Run(() =>
@@ -80,6 +98,12 @@ namespace Jt808TerminalEmulator.Core.Netty
                 var location = new LocationDto();
                 while (!cts.IsCancellationRequested)
                 {
+                    if (!Logged)
+                    {
+                        logger.LogInformation("正在等待登录鉴权.");
+                        await Task.Delay(TimeSpan.FromSeconds(5));
+                        continue;
+                    }
                     logger.LogInformation($"当前索引{index}");
                     location = lineManager.GetNextLocation(lineId, location, Speed, interval, ref index, reverse);
                     if (location == default)
@@ -93,8 +117,8 @@ namespace Jt808TerminalEmulator.Core.Netty
                     }
                     LastLocation = new Jt808_0x0200_LocationReport
                     {
-                        AlarmSign = AlarmSign,
-                        Status = Status,
+                        VehicleAlarm = Alarm,
+                        VehicleStatus = Status,
                         Speed = (ushort)(speed * 10),
                         Longitude = (int)(location.Logintude * 10e5),
                         Latitude = (int)(location.Latitude * 10e5),
@@ -133,7 +157,7 @@ namespace Jt808TerminalEmulator.Core.Netty
 
         Status Status { get; set; }
 
-        AlarmSign AlarmSign { get; set; }
+        Alarm Alarm { get; set; }
 
         double Speed { get; set; }
         Jt808_0x0200_LocationReport LastLocation { get; }

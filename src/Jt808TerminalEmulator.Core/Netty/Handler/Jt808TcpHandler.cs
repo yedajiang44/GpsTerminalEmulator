@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DotNetty.Handlers.Timeout;
 using DotNetty.Transport.Channels;
 using GpsPlatform.Infrastructure.Extentions;
-using GpsPlatform.Jt808Protocol;
 using GpsPlatform.Jt808Protocol.Instruction;
 using GpsPlatform.Jt808Protocol.PackageInfo;
 using Jt808TerminalEmulator.Core.Abstract;
@@ -19,6 +15,7 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
         private readonly ILogger logger;
         private readonly IPackageConverter packageConverter;
         private readonly ISessionManager sessionManager;
+        private string phoneNumber;
 
         public Jt808TcpHandler(ILogger<Jt808TcpHandler> logger, IPackageConverter packageConverter, ISessionManager sessionManager)
         {
@@ -31,9 +28,68 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
         {
             try
             {
+                if (phoneNumber == null)
+                {
+                    var session = sessionManager.GetTcpClientSessions().FirstOrDefault(x => x.Id == ctx.Channel.Id.AsLongText());
+                    phoneNumber = session?.PhoneNumber;
+                }
                 var package = packageConverter.Deserialize<Jt808PackageInfo>(msg);
                 if (logger.IsEnabled(LogLevel.Trace))
                     logger.LogTrace($"解析成功--->卡号：{package.Header.PhoneNumber} ，消息：{msg.ToHexString()}");
+                switch (package.Body)
+                {
+                    case Jt808_0x8001_UniversalResponse jt808_0x0001:
+                        {
+                            switch (jt808_0x0001.MessageId)
+                            {
+                                case 0x8100:
+                                    {
+                                        logger.LogDebug("{phoneNumber}鉴权结果：{result}", phoneNumber, jt808_0x0001.Result.ToDescription());
+                                        if (jt808_0x0001.Result == Jt808_0x8001_UniversalResponse.ResultType.Success)
+                                        {
+                                            var session = sessionManager.GetTcpClientSessions().FirstOrDefault(x => x.Id == ctx.Channel.Id.AsLongText()) as TcpClientSession;
+                                            session.Logged = true;
+                                        }
+                                    }
+                                    break;
+                                case 0x0003:
+                                    {
+                                        logger.LogDebug("{phoneNumber}注销结果：{result}", phoneNumber, jt808_0x0001.Result.ToDescription());
+                                        ctx.WriteAndFlushAsync(new Jt808PackageInfo
+                                        {
+                                            Header = new Header { PhoneNumber = phoneNumber },
+                                            Body = new Jt808_0x0100_Register
+                                            {
+                                                ManufacturerId = "",
+                                                TerminalModel = "",
+                                                TerminalId = phoneNumber,
+                                                VehicleIdentification = ""
+                                            }
+                                        });
+                                    }
+                                    break;
+                            }
+                        }
+                        break;
+                    case Jt808_0x8100_RegisterRespone jt808_0x8100:
+                        {
+                            logger.LogDebug("{phoneNumber}注册结果：{result}", phoneNumber, jt808_0x8100.Result.ToDescription());
+                            var data = new Jt808PackageInfo
+                            {
+                                Header = new Header { PhoneNumber = phoneNumber },
+                                Body = jt808_0x8100.Result switch
+                                {
+                                    Jt808_0x8100_RegisterRespone.RegisterResult.Success => new Jt808_0x0102_Authentication
+                                    {
+                                        Code = jt808_0x8100.Code
+                                    },
+                                    _ => new Jt808_0x0003_Logout()
+                                }
+                            };
+                            ctx.WriteAndFlushAsync(data);
+                        }
+                        break;
+                }
             }
             catch (Exception e)
             {
@@ -50,19 +106,14 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
                     context.CloseAsync();
                     break;
                 case IdleStateEvent writerIdle when writerIdle.State == IdleState.WriterIdle:
-                    var session = sessionManager.GetTcpClientSessions().FirstOrDefault(x => x.Id == context.Channel.Id.AsLongText());
-                    if (session != default)
+                    context.WriteAndFlushAsync(new Jt808PackageInfo
                     {
-                        context.WriteAndFlushAsync(new Jt808PackageInfo
+                        Header = new Header
                         {
-                            Header = new Header
-                            {
-                                PhoneNumber = session.PhoneNumber
-                            },
-                            Body = new Jt808_0x0002_Heartbeat()
-                        });
-                    }
-
+                            PhoneNumber = phoneNumber
+                        },
+                        Body = new Jt808_0x0002_Heartbeat()
+                    });
                     break;
             }
 

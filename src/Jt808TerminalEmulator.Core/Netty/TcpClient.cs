@@ -75,7 +75,7 @@ namespace Jt808TerminalEmulator.Core.Netty
                 throw new Exception($"Unable to connect {ip}:{port}, please confirm and try again.");
 
             _ = channel.CloseCompletion.ContinueWith(_ => sessionManager.RemoveById(channel.Id.AsLongText()));
-            session = new TcpClientSession(serviceProvider) { Channel = channel, PhoneNumber = phoneNumber };
+            session = new TcpClientSession(serviceProvider, channel, phoneNumber);
             sessionManager.Add(session);
             return session;
         }
