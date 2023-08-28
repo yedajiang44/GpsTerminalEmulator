@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Bogus" Version="34.0.2" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.23" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.0" />
     <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="7.18.0" />
   </ItemGroup>
 
