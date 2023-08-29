@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Jt808TerminalEmulator.Model.Dtos;
 
-namespace Jt808TerminalEmulator.Model.Dtos
+public class PageResultDto<T>
 {
-    public class PageResultDto<T>
-    {
-        public long Total { get; set; }
+    public long Total { get; set; }
 
-        public IEnumerable<T> List { get; set; }
-    }
+    public IEnumerable<T> List { get; set; }
 }

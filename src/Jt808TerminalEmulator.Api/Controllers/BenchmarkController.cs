@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Jt808TerminalEmulator.Core;
 using Jt808TerminalEmulator.Core.Abstract;
 using Jt808TerminalEmulator.Interface;
