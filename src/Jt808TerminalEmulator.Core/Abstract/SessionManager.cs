@@ -7,7 +7,7 @@ namespace Jt808TerminalEmulator.Core.Abstract
 {
     public class SessionManager : ISessionManager
     {
-        // key为终端卡号
+        // key为链接标识
         readonly ConcurrentDictionary<string, ITcpClientSession> tcpSessions = new();
 
         // key为链接标识
@@ -16,7 +16,7 @@ namespace Jt808TerminalEmulator.Core.Abstract
             switch (session)
             {
                 case ITcpClientSession tcpSession:
-                    tcpSessions.AddOrUpdate(tcpSession.PhoneNumber, tcpSession, (_, value) =>
+                    tcpSessions.AddOrUpdate(tcpSession.Id, tcpSession, (_, value) =>
                     {
                         value?.Close().GetAwaiter().GetResult();
                         return tcpSession;
@@ -27,13 +27,12 @@ namespace Jt808TerminalEmulator.Core.Abstract
 
         public bool Contains(string phoneNumber)
         {
-            return tcpSessions.TryGetValue(phoneNumber, out _);
+            return tcpSessions.Values.Any(x => x.PhoneNumber == phoneNumber);
         }
 
         public ITcpClientSession GetTcpClientSession(string phoneNumber)
         {
-            tcpSessions.TryGetValue(phoneNumber, out ITcpClientSession session);
-            return session;
+            return tcpSessions.Values.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
         }
 
         public bool TryGetTcpClientSession(string phoneNumber, out ITcpClientSession session)
@@ -51,11 +50,9 @@ namespace Jt808TerminalEmulator.Core.Abstract
 
         public void RemoveById(string sessionId)
         {
-            var session = tcpSessions.Values.FirstOrDefault(x => x.Id == sessionId);
-            if (session != null)
+            if (tcpSessions.TryRemove(sessionId, out var session))
             {
                 session.Close();
-                tcpSessions.TryRemove(session.PhoneNumber, out _);
             }
         }
     }
