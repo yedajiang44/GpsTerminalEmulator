@@ -1,48 +1,43 @@
-﻿using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using Jt808TerminalEmulator.Data.Entity;
 using Jt808TerminalEmulator.Model.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Jt808TerminalEmulator.Service
+namespace Jt808TerminalEmulator.Service;
+
+public class AutoMapperProfile : Profile
 {
-    public class AutoMapperProfile : Profile
+    public AutoMapperProfile()
     {
-        public AutoMapperProfile()
-        {
-            CreateMap(typeof(PageResultDto<>), typeof(PageResultDto<>));
-            CreateMap<TerminalDto, TerminalEntity>()
-                .AfterMap((dto, entity) =>
-                {
-                    if (string.IsNullOrEmpty(entity.Id)) entity.Init();
-                    if (string.IsNullOrEmpty(dto.Id)) dto.Id = entity.Id;
-                })
-                .ReverseMap();
-            CreateMap<LineDto, LineEntity>()
-                .AfterMap((dto, entity) =>
-                {
-                    if (string.IsNullOrEmpty(entity.Id)) entity.Init();
-                    entity.LocationCount = entity.Locations.Count;
-                    if (string.IsNullOrEmpty(dto.Id)) dto.Id = entity.Id;
-                })
-                .ReverseMap();
-            CreateMap<LocationDto, LocationEntity>()
-                .AfterMap((dto, entity) =>
-                {
-                    if (string.IsNullOrEmpty(entity.Id)) entity.Init();
-                    if (string.IsNullOrEmpty(dto.Id)) dto.Id = entity.Id;
-                })
-                .ReverseMap();
-            CreateMap<TaskDto, TaskEntity>()
-                .AfterMap((dto, entity) =>
-                {
-                    if (string.IsNullOrEmpty(entity.Id)) entity.Init();
-                    if (string.IsNullOrEmpty(dto.Id)) dto.Id = entity.Id;
-                }).ReverseMap()
-                .ForMember(x => x.LineName, m => m.MapFrom(x => x.Line.Name))
-                .ForMember(x => x.SimNumber, m => m.MapFrom(x => x.Terminals.FirstOrDefault().Sim));
-        }
+        CreateMap(typeof(PageResultDto<>), typeof(PageResultDto<>));
+        CreateMap<TerminalDto, TerminalEntity>()
+            .AfterMap((dto, entity) =>
+            {
+                if (string.IsNullOrEmpty(entity.Id)) entity.Init();
+                if (string.IsNullOrEmpty(dto.Id)) dto.Id = entity.Id;
+            })
+            .ReverseMap();
+        CreateMap<LineDto, LineEntity>()
+            .AfterMap((dto, entity) =>
+            {
+                if (string.IsNullOrEmpty(entity.Id)) entity.Init();
+                entity.LocationCount = entity.Locations.Count;
+                if (string.IsNullOrEmpty(dto.Id)) dto.Id = entity.Id;
+            })
+            .ReverseMap();
+        CreateMap<LocationDto, LocationEntity>()
+            .AfterMap((dto, entity) =>
+            {
+                if (string.IsNullOrEmpty(entity.Id)) entity.Init();
+                if (string.IsNullOrEmpty(dto.Id)) dto.Id = entity.Id;
+            })
+            .ReverseMap();
+        CreateMap<TaskDto, TaskEntity>()
+            .AfterMap((dto, entity) =>
+            {
+                if (string.IsNullOrEmpty(entity.Id)) entity.Init();
+                if (string.IsNullOrEmpty(dto.Id)) dto.Id = entity.Id;
+            }).ReverseMap()
+            .ForMember(x => x.LineName, m => m.MapFrom(x => x.Line.Name))
+            .ForMember(x => x.SimNumber, m => m.MapFrom(x => x.Terminals.FirstOrDefault().Sim));
     }
 }

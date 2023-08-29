@@ -1,61 +1,58 @@
 ﻿using Jt808TerminalEmulator.Core.Abstract;
-using Jt808TerminalEmulator.Core.Netty;
-using Jt808TerminalEmulator.Interface;
 using Jt808TerminalEmulator.Model.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Jt808TerminalEmulator.Api.Controllers
+namespace Jt808TerminalEmulator.Api.Controllers;
+
+[Authorize]
+[ApiController]
+[Route("api/[controller]")]
+public class SessionController : ControllerBase
 {
-    [Authorize]
-    [ApiController]
-    [Route("api/[controller]")]
-    public class SessionController : ControllerBase
+    private readonly ITcpClientManager tcpClientManager;
+
+    public SessionController(ITcpClientManager tcpClientManager)
     {
-        private readonly ITcpClientManager tcpClientManager;
+        this.tcpClientManager = tcpClientManager;
+    }
 
-        public SessionController(ITcpClientManager tcpClientManager)
+    [HttpGet]
+    public IActionResult Index()
+    {
+        try
         {
-            this.tcpClientManager = tcpClientManager;
+            return Ok(new JsonResultDto<IEnumerable<Core.Netty.ISession>>
+            {
+                Flag = true,
+                Data = tcpClientManager.GetTcpClients().SelectMany(x => x.Sesions().Result)
+            });
         }
-
-        [HttpGet]
-        public IActionResult Index()
+        catch (Exception e)
         {
-            try
+            return Ok(new JsonResultDto<IEnumerable<Core.Netty.ISession>>
             {
-                return Ok(new JsonResultDto<IEnumerable<Core.Netty.ISession>>
-                {
-                    Flag = true,
-                    Data = tcpClientManager.GetTcpClients().SelectMany(x => x.Sesions().Result)
-                });
-            }
-            catch (Exception e)
-            {
-                return Ok(new JsonResultDto<IEnumerable<Core.Netty.ISession>>
-                {
-                    Message = e.Message
-                });
-            }
+                Message = e.Message
+            });
         }
-        [HttpGet("[action]")]
-        public IActionResult Count()
+    }
+    [HttpGet("[action]")]
+    public IActionResult Count()
+    {
+        try
         {
-            try
+            return Ok(new JsonResultDto<long>
             {
-                return Ok(new JsonResultDto<long>
-                {
-                    Flag = true,
-                    Data = tcpClientManager.GetTcpClients().SelectMany(x => x.Sesions().Result).Count()
-                });
-            }
-            catch (Exception e)
+                Flag = true,
+                Data = tcpClientManager.GetTcpClients().SelectMany(x => x.Sesions().Result).Count()
+            });
+        }
+        catch (Exception e)
+        {
+            return Ok(new JsonResultDto<long>
             {
-                return Ok(new JsonResultDto<long>
-                {
-                    Message = e.Message
-                });
-            }
+                Message = e.Message
+            });
         }
     }
 }

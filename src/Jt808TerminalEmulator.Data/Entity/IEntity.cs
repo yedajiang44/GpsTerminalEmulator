@@ -1,7 +1,6 @@
-namespace Jt808TerminalEmulator.Data.Entity
+namespace Jt808TerminalEmulator.Data.Entity;
+
+public interface IEntity<TPrimaryKey>
 {
-    public interface IEntity<TPrimaryKey>
-    {
-         TPrimaryKey Id{ get; set;}
-    }
+    TPrimaryKey Id { get; set; }
 }

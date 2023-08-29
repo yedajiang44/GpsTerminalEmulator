@@ -1,37 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Jt808TerminalEmulator.Data.Entity;
 
-namespace Jt808TerminalEmulator.Data.Entity
+/// <summary>
+/// 定位点实体
+/// </summary>
+public class LocationEntity : BaseEntity
 {
     /// <summary>
-    /// 定位点实体
+    /// 排序
     /// </summary>
-    public class LocationEntity : BaseEntity
-    {
-        /// <summary>
-        /// 排序
-        /// </summary>
-        public int Order { get; set; }
+    public int Order { get; set; }
 
-        /// <summary>
-        /// 经度
-        /// </summary>
-        public double Logintude { get; set; }
+    /// <summary>
+    /// 经度
+    /// </summary>
+    public double Logintude { get; set; }
 
-        /// <summary>
-        /// 纬度
-        /// </summary>
-        public double Latitude { get; set; }
+    /// <summary>
+    /// 纬度
+    /// </summary>
+    public double Latitude { get; set; }
 
-        /// <summary>
-        /// 线路主键
-        /// </summary>
-        public string LineId { get; set; }
+    /// <summary>
+    /// 线路主键
+    /// </summary>
+    public string LineId { get; set; }
 
-        /// <summary>
-        /// 所属线路
-        /// </summary>
-        public LineEntity Line { get; set; }
-    }
+    /// <summary>
+    /// 所属线路
+    /// </summary>
+    public LineEntity Line { get; set; }
 }

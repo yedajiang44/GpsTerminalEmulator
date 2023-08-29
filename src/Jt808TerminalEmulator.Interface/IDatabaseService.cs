@@ -1,10 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿namespace Jt808TerminalEmulator.Interface;
 
-namespace Jt808TerminalEmulator.Interface
+public interface IDatabaseService
 {
-    public interface IDatabaseService
-    {
-        Task InitAsync();
-    }
+    Task InitAsync();
 }

@@ -5,12 +5,11 @@ using Jt808TerminalEmulator.Model.Dtos;
 using Jt808TerminalEmulator.Repository.Base;
 using Jt808TerminalEmulator.Repository.UnitOfWork;
 
-namespace Jt808TerminalEmulator.Service
+namespace Jt808TerminalEmulator.Service;
+
+internal class LineService : BaseService<LineDto, LineEntity>, ILineService
 {
-    internal class LineService : BaseService<LineDto, LineEntity>, ILineService
+    public LineService(IMapper mapper, IUnitOfWork unitOfWork, IBaseRepository<LineEntity> currentRepository) : base(mapper, unitOfWork, currentRepository)
     {
-        public LineService(IMapper mapper, IUnitOfWork unitOfWork, IBaseRepository<LineEntity> currentRepository) : base(mapper, unitOfWork, currentRepository)
-        {
-        }
     }
 }

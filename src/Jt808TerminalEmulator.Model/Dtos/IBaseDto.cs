@@ -1,7 +1,6 @@
-namespace Jt808TerminalEmulator.Model.Dtos
+namespace Jt808TerminalEmulator.Model.Dtos;
+
+public interface IBaseDto<TPrimaryKey>
 {
-    public interface IBaseDto<TPrimaryKey>
-    {
-        TPrimaryKey Id { get; set; }
-    }
+    TPrimaryKey Id { get; set; }
 }
