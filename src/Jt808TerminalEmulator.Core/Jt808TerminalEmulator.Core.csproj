@@ -1,9 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="DotNetty.Codecs" Version="0.7.5" />
     <PackageReference Include="DotNetty.Codecs.Http" Version="0.7.5" />

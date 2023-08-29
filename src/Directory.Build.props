@@ -1,0 +1,13 @@
+<Project>
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Authors>yedajiang44</Authors>
+        <Company>yedajiang44.com</Company>
+        <Copyright>yedajiang44.com</Copyright>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+        <NoWarn>1591</NoWarn>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+</Project>
