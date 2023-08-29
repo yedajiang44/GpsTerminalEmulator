@@ -53,7 +53,10 @@ namespace Jt808TerminalEmulator.Core.Abstract
         {
             var session = tcpSessions.Values.FirstOrDefault(x => x.Id == sessionId);
             if (session != null)
+            {
+                session.Close();
                 tcpSessions.TryRemove(session.PhoneNumber, out _);
+            }
         }
     }
     public interface ISessionManager
