@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Jt808TerminalEmulator.Model.Enum;
 
 namespace Jt808TerminalEmulator.Model.Dtos
@@ -41,7 +40,7 @@ namespace Jt808TerminalEmulator.Model.Dtos
         /// <summary>
         /// 状态
         /// </summary>
-        public TaskStatus Status { get; set; }
+        public Enum.TaskStatus Status { get; set; }
 
         /// <summary>
         /// 线路主键

@@ -1,10 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Figgle" Version="0.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" />
@@ -24,6 +19,5 @@
     <ProjectReference Include="..\Jt808TerminalEmulator.Model\Jt808TerminalEmulator.Model.csproj" />
     <ProjectReference Include="..\Jt808TerminalEmulator.Service\Jt808TerminalEmulator.Service.csproj" />
   </ItemGroup>
-
 
 </Project>
