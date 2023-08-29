@@ -28,21 +28,21 @@ namespace Jt808TerminalEmulator.Core.Netty.Handler
         {
             try
             {
+                if (logger.IsEnabled(LogLevel.Trace))
+                    logger.LogTrace("{phoneNumber} 收到报文: {hex}", phoneNumber, msg.ToHexString());
                 if (phoneNumber == null)
                 {
                     var session = sessionManager.GetTcpClientSessions().FirstOrDefault(x => x.Id == ctx.Channel.Id.AsLongText());
                     phoneNumber = session?.PhoneNumber;
                 }
                 var package = packageConverter.Deserialize<Jt808PackageInfo>(msg);
-                if (logger.IsEnabled(LogLevel.Trace))
-                    logger.LogTrace($"解析成功--->卡号：{package.Header.PhoneNumber} ，消息：{msg.ToHexString()}");
                 switch (package.Body)
                 {
                     case Jt808_0x8001_UniversalResponse jt808_0x0001:
                         {
                             switch (jt808_0x0001.MessageId)
                             {
-                                case 0x8100:
+                                case 0x0102:
                                     {
                                         logger.LogDebug("{phoneNumber}鉴权结果：{result}", phoneNumber, jt808_0x0001.Result.ToDescription());
                                         if (jt808_0x0001.Result == Jt808_0x8001_UniversalResponse.ResultType.Success)
