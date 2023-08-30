@@ -41,7 +41,7 @@ public class SessionManager : ISessionManager
 
     public ITcpClientSession GetTcpClientSessionById(string sessionId)
     {
-        return tcpSessions.Values.FirstOrDefault(x => x.Id == sessionId);
+        return tcpSessions.TryGetValue(sessionId, out var session) ? session : null;
     }
 
     public IEnumerable<ITcpClientSession> GetTcpClientSessions() => tcpSessions.Values.ToList();

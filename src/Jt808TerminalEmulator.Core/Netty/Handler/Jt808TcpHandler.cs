@@ -30,7 +30,7 @@ internal class Jt808TcpHandler : SimpleChannelInboundHandler<byte[]>
                 logger.LogTrace("{phoneNumber} 收到报文: {hex}", phoneNumber, msg.ToHexString());
             if (phoneNumber == null)
             {
-                var session = sessionManager.GetTcpClientSessions().FirstOrDefault(x => x.Id == ctx.Channel.Id.AsLongText());
+                var session = sessionManager.GetTcpClientSessionById(ctx.Channel.Id.AsLongText());
                 phoneNumber = session?.PhoneNumber;
             }
             var package = packageConverter.Deserialize<Jt808PackageInfo>(msg);
@@ -43,9 +43,8 @@ internal class Jt808TcpHandler : SimpleChannelInboundHandler<byte[]>
                             case 0x0102:
                                 {
                                     logger.LogDebug("{phoneNumber}鉴权结果：{result}", phoneNumber, jt808_0x0001.Result.ToDescription());
-                                    if (jt808_0x0001.Result == Jt808_0x8001_UniversalResponse.ResultType.Success)
+                                    if (jt808_0x0001.Result == Jt808_0x8001_UniversalResponse.ResultType.Success && sessionManager.GetTcpClientSessionById(ctx.Channel.Id.AsLongText()) is TcpClientSession session)
                                     {
-                                        var session = sessionManager.GetTcpClientSessions().FirstOrDefault(x => x.Id == ctx.Channel.Id.AsLongText()) as TcpClientSession;
                                         session.Logged = true;
                                     }
                                 }
