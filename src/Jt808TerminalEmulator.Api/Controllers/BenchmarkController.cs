@@ -91,10 +91,16 @@ public class BenchmarkController : ControllerBase
                 LicensePlate = x.LicensePlate
             };
         });
+        result = filter.OnlineState switch
+        {
+            OnlineStatus.Online => result.Where(x => x.Online),
+            OnlineStatus.Offline => result.Where(x => !x.Online),
+            _ => result
+        };
         return Ok(new PageResultDto<BenchmarkListItemDto>
         {
             List = result,
-            Total = terminals.Total
+            Total = result.Count()
         });
     }
 }
