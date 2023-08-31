@@ -1,3 +1,4 @@
+using System.Linq.Dynamic.Core;
 using Jt808TerminalEmulator.Core;
 using Jt808TerminalEmulator.Core.Abstract;
 using Jt808TerminalEmulator.Interface;
@@ -81,14 +82,23 @@ public class BenchmarkController : ControllerBase
     [HttpGet("[action]")]
     public async Task<IActionResult> Search([FromQuery] TerminalFilter filter)
     {
-        var terminals = await terminalService.QueryWithPage(filter);
-        var result = terminals.List.Select(x =>
+        //StartDateTime.ascend-LastActiveDateTime.desc
+        var sort = filter.Sort?.Replace("-", ",").Replace('.', ' ').Replace("ascend", "").Replace("descend", "desc");
+        var pageSize = filter.Size;
+        var pageIndex = filter.Index;
+        var terminals = await terminalService.Query(filter);
+        var sessions = sessionManager.GetTcpClientSessions();
+        var result = terminals.Select(x =>
         {
+            var session = sessions.FirstOrDefault(item => item.PhoneNumber == x.Sim);
             return new BenchmarkListItemDto
             {
                 SimNumber = x.Sim,
-                Online = sessionManager.Contains(x.Sim),
-                LicensePlate = x.LicensePlate
+                Online = session != default,
+                LicensePlate = x.LicensePlate,
+                StartDateTime = session?.StartDateTime,
+                LastActiveDateTime = session?.LastActiveDateTime,
+                OnlineTime = session?.StartDateTime != null && session?.LastActiveDateTime != null ? TimeOnly.FromTimeSpan(session.LastActiveDateTime - session.StartDateTime) : TimeOnly.MinValue
             };
         });
         result = filter.OnlineState switch
@@ -97,10 +107,16 @@ public class BenchmarkController : ControllerBase
             OnlineStatus.Offline => result.Where(x => !x.Online),
             _ => result
         };
+        if (!string.IsNullOrWhiteSpace(sort))
+        {
+            result = result.AsQueryable()
+            .OrderBy(sort);
+        }
+
         return Ok(new PageResultDto<BenchmarkListItemDto>
         {
-            List = result,
-            Total = result.Count()
+            List = result.Skip(pageSize * (pageIndex - 1)).Take(pageSize),
+            Total = terminals.Count
         });
     }
 }

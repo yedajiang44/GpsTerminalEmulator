@@ -26,13 +26,11 @@ internal class Jt808TcpHandler : SimpleChannelInboundHandler<byte[]>
     {
         try
         {
+            var session = sessionManager.GetTcpClientSessionById(ctx.Channel.Id.AsLongText()) as TcpClientSession;
+            phoneNumber ??= session?.PhoneNumber;
             if (logger.IsEnabled(LogLevel.Trace))
                 logger.LogTrace("{phoneNumber} 收到报文: {hex}", phoneNumber, msg.ToHexString());
-            if (phoneNumber == null)
-            {
-                var session = sessionManager.GetTcpClientSessionById(ctx.Channel.Id.AsLongText());
-                phoneNumber = session?.PhoneNumber;
-            }
+            session.LastActiveDateTime = DateTime.Now;
             var package = packageConverter.Deserialize<Jt808PackageInfo>(msg);
             switch (package.Body)
             {
@@ -43,7 +41,7 @@ internal class Jt808TcpHandler : SimpleChannelInboundHandler<byte[]>
                             case 0x0102:
                                 {
                                     logger.LogDebug("{phoneNumber}鉴权结果：{result}", phoneNumber, jt808_0x0001.Result.ToDescription());
-                                    if (jt808_0x0001.Result == Jt808_0x8001_UniversalResponse.ResultType.Success && sessionManager.GetTcpClientSessionById(ctx.Channel.Id.AsLongText()) is TcpClientSession session)
+                                    if (jt808_0x0001.Result == Jt808_0x8001_UniversalResponse.ResultType.Success)
                                     {
                                         session.Logged = true;
                                     }
@@ -52,7 +50,7 @@ internal class Jt808TcpHandler : SimpleChannelInboundHandler<byte[]>
                             case 0x0003:
                                 {
                                     logger.LogDebug("{phoneNumber}注销结果：{result}", phoneNumber, jt808_0x0001.Result.ToDescription());
-                                    ctx.WriteAndFlushAsync(new Jt808PackageInfo
+                                    session.Send(new Jt808PackageInfo
                                     {
                                         Header = new Header { PhoneNumber = phoneNumber },
                                         Body = new Jt808_0x0100_Register
@@ -83,7 +81,7 @@ internal class Jt808TcpHandler : SimpleChannelInboundHandler<byte[]>
                                 _ => new Jt808_0x0003_Logout()
                             }
                         };
-                        ctx.WriteAndFlushAsync(data);
+                        session.Send(data);
                     }
                     break;
             }
@@ -103,7 +101,7 @@ internal class Jt808TcpHandler : SimpleChannelInboundHandler<byte[]>
                 context.CloseAsync();
                 break;
             case IdleStateEvent writerIdle when writerIdle.State == IdleState.WriterIdle:
-                context.WriteAndFlushAsync(new Jt808PackageInfo
+                sessionManager.GetTcpClientSessionById(context.Channel.Id.AsLongText()).Send(new Jt808PackageInfo
                 {
                     Header = new Header
                     {

@@ -15,13 +15,26 @@ internal class WebSocketSession : IWebSocketSession
     IChannel Channel { get; }
     public DateTime LastActiveTime { get; set; }
     public DateTime StartTime { get; }
+
+    public DateTime StartDateTime { get; } = DateTime.Now;
+
+    public DateTime LastActiveDateTime { get; set; }
+
     public WebSocketSession(IChannel channel)
     {
         Channel = channel;
         StartTime = DateTime.Now;
     }
-    public Task Send(byte[] data) => Channel.WriteAndFlushAsync(data);
-    public Task Send(string data) => Channel.WriteAndFlushAsync(data);
+    public Task Send(byte[] data)
+    {
+        LastActiveDateTime = DateTime.Now;
+        return Channel.WriteAndFlushAsync(data);
+    }
+    public Task Send(string data)
+    {
+        LastActiveDateTime = DateTime.Now;
+        return Channel.WriteAndFlushAsync(data);
+    }
 
     public async Task Close()
     {
@@ -50,9 +63,21 @@ internal class TcpClientSession : ITcpClientSession
 
     public string PhoneNumber { get; set; }
 
-    public Task Send(Jt808PackageInfo data) => Channel.WriteAndFlushAsync(data);
+    public DateTime StartDateTime { get; } = DateTime.Now;
 
-    public Task Send(byte[] data) => Channel.WriteAndFlushAsync(data);
+    public DateTime LastActiveDateTime { get; set; }
+
+    public Task Send(Jt808PackageInfo data)
+    {
+        LastActiveDateTime = DateTime.Now;
+        return Channel.WriteAndFlushAsync(data);
+    }
+
+    public Task Send(byte[] data)
+    {
+        LastActiveDateTime = DateTime.Now;
+        return Channel.WriteAndFlushAsync(data);
+    }
 
     private CancellationTokenSource cts;
 
@@ -167,5 +192,7 @@ public interface ITcpClientSession : ISession
 public interface ISession
 {
     string Id { get; }
+    DateTime StartDateTime { get; }
+    DateTime LastActiveDateTime { get; set; }
     Task Close();
 }
