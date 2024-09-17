@@ -35,10 +35,10 @@ public class TaskDto : BaseDto
     /// </summary>
     public int Port { get; set; }
 
-    /// <summary>
-    /// 状态
-    /// </summary>
-    public Enum.TaskStatus Status { get; set; }
+        /// <summary>
+        /// 状态
+        /// </summary>
+        public Enum.TaskStatus Status { get; set; }
 
     /// <summary>
     /// 线路主键

@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/Jt808TerminalEmulator.Api/bin/Debug/net7.0/Jt808TerminalEmulator.Api.dll",
+            "program": "${workspaceFolder}/src/Jt808TerminalEmulator.Api/bin/Debug/net8.0/Jt808TerminalEmulator.Api.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/Jt808TerminalEmulator.Api",
             "stopAtEntry": false,

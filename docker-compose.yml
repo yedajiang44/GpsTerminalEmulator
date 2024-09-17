@@ -1,11 +1,10 @@
-version: "3"
 networks:
   jt808terminalemulator:
     driver: bridge
     name: jt808terminalemulator
 services:
   api:
-    image: "yedajiang44/jt808terminalemulator:latest"
+    image: yedajiang44/jt808terminalemulator
     container_name: api
     hostname: api
     restart: always
@@ -35,7 +34,7 @@ services:
       - jt808terminalemulator
 
   ui:
-    image: "yedajiang44/jt808terminalemulator-ui:latest"
+    image: yedajiang44/jt808terminalemulator-ui
     container_name: ui
     hostname: ui
     restart: always
