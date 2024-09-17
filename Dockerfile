@@ -3,4 +3,4 @@ WORKDIR /app
 COPY .output . 
 #设置端口
 EXPOSE 80
-ENTRYPOINT ["dotnet", "Jt808TerminalEmulator.Api.dll"] 
+ENTRYPOINT ["Jt808TerminalEmulator.Api"] 

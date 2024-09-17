@@ -1,42 +1,84 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "build",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "build",
-                "${workspaceFolder}/src/Jt808TerminalEmulator.Api/Jt808TerminalEmulator.Api.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "publish",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "publish",
-                "${workspaceFolder}/src/Jt808TerminalEmulator.Api/Jt808TerminalEmulator.Api.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "watch",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "watch",
-                "run",
-                "${workspaceFolder}/src/Jt808TerminalEmulator.Api/Jt808TerminalEmulator.Api.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "problemMatcher": "$msCompile"
-        }
-    ]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/Jt808TerminalEmulator.Api/Jt808TerminalEmulator.Api.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "publish",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "publish",
+        "${workspaceFolder}/src/Jt808TerminalEmulator.Api/Jt808TerminalEmulator.Api.csproj",
+        "/P:GenerateFullPaths=true",
+        "/p:RuntimeIdentifier=${input:os-rif}",
+        "/p:PublishSingleFile=${input:single}",
+        "/p:PublishDir=${workspaceFolder}/.output/${input:os-rif}",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "watch",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "watch",
+        "run",
+        "${workspaceFolder}/src/Jt808TerminalEmulator.Api/Jt808TerminalEmulator.Api.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build docker image",
+      "detail": "编译镜像",
+      "hide": true,
+      "type": "shell",
+      "command": "docker compose build --no-cache",
+      "dependsOn": ["publish"],
+      "problemMatcher": []
+    },
+    {
+      "label": "push docker image",
+      "detail": "推送镜像",
+      "type": "shell",
+      "command": "docker compose push",
+      "dependsOn": ["build docker image"],
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "os-rif",
+      "type": "pickString",
+      "description": "请选择目标os平台",
+      "options": [
+        { "label": "windows x64", "value": "win-x64" },
+        { "label": "linux x64", "value": "linux-x64" }
+      ],
+      "default": "linux-x64"
+    },
+    {
+      "id": "single",
+      "type": "pickString",
+      "description": "是否发布单文件",
+      "options": [
+        { "label": "是", "value": "true" },
+        { "label": "否", "value": "false" }
+      ],
+      "default": "false"
+    }
+  ]
 }
