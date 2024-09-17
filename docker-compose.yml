@@ -9,8 +9,10 @@ services:
       context: .
       dockerfile: Dockerfile
       tags:
-        - docker.yedajiang44.com/yedajiang44/jt808terminalemulator:bate-1.6
         - yedajiang44/jt808terminalemulator:bate-1.6
+        - docker.yedajiang44.com/yedajiang44/jt808terminalemulator
+        - docker.yedajiang44.com/yedajiang44/jt808terminalemulator:bate-1.6
+        - registry.cn-hangzhou.aliyuncs.com/yedajiang44/jt808terminalemulator
         - registry.cn-hangzhou.aliyuncs.com/yedajiang44/jt808terminalemulator:bate-1.6
     container_name: api
     hostname: api
