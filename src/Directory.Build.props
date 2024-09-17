@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <Authors>yedajiang44</Authors>
         <Company>yedajiang44.com</Company>
         <Copyright>yedajiang44.com</Copyright>
