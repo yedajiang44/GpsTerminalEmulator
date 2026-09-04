@@ -7,7 +7,7 @@ public static class DependencyInjectionExtensions
 {
     public static IServiceCollection UseServices(this IServiceCollection services)
     {
-        services.AddAutoMapper(typeof(AutoMapperProfile));
+        services.AddAutoMapper(x =>x.AddProfile<AutoMapperProfile>());
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         foreach (var x in typeof(UnitOfWork).Assembly.GetTypes().Where(x => !x.IsInterface && x.Namespace.StartsWith("Jt808TerminalEmulator.Repository.Repositorys")).Select(x => new { Implementation = x, Services = x.GetInterfaces() }))
         {

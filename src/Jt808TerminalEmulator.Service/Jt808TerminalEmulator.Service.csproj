@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper.Extensions.ExpressionMapping" Version="7.0.2" />
+    <PackageReference Include="AutoMapper.Extensions.ExpressionMapping" Version="11.0.0" />
   </ItemGroup>
 
   <ItemGroup>

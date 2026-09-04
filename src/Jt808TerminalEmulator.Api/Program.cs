@@ -1,4 +1,4 @@
-using Figgle;
+using Figgle.Fonts;
 using Jt808TerminalEmulator;
 using Jt808TerminalEmulator.Api;
 using Jt808TerminalEmulator.Api.Configurations;

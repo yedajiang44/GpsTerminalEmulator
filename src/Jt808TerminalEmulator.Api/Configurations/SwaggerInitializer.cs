@@ -1,4 +1,4 @@
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace Jt808TerminalEmulator.Api.Configurations;
 
@@ -37,29 +37,18 @@ public static class SwaggerInitializer
 
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Description = "请输入登录接口返回的Token，并前置Bearer，示例：Bearer { Roken }",
+                Description = "请输入登录接口返回的Token，并前置Bearer，示例：Bearer {Token}",
                 Name = "Authorization",
                 In = ParameterLocation.Header,//jwt默认存放Authorization信息的位置(请求头中)
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer"
+                Type = SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT"
             });
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+
+            c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
             {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference()
-                            {
-                                Id = "Bearer",
-                                Type = ReferenceType.SecurityScheme
-                            },
-                            Scheme = "oauth2",
-                            Name = "Bearer",
-                            In = ParameterLocation.Header,
-                        },
-                        Array.Empty<string>()
-                    }
-             });
+                [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+            });
         });
     }
 
