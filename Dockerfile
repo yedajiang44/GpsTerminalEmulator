@@ -1,8 +1,19 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+WORKDIR /src
+COPY . .
+RUN dotnet publish src/Jt808TerminalEmulator.Api/Jt808TerminalEmulator.Api.csproj \
+    -c Release -o /app/publish \
+    --self-contained false \
+    /p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-COPY .output/linux-x64/ .
-EXPOSE 8080
+
 ENV LANG=en_US.UTF-8
 ENV TZ=Asia/Shanghai
 ENV DOTNET_USE_POLLING_FILE_WATCHER=true
-ENTRYPOINT ["./Jt808TerminalEmulator.Api"] 
+
+COPY --from=build /app/publish .
+
+ENTRYPOINT ["dotnet", "Jt808TerminalEmulator.Api.dll"]

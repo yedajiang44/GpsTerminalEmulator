@@ -1,0 +1,67 @@
+name: Release with SBOM
+
+on:
+  push:
+    tags:
+      - v*.*.*   # 触发方式：发布版本标签，如 v1.2.3
+
+jobs:
+  release:
+    name: Create GitHub Release + Attach SBOM
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ---------------------------
+      # 生成 SBOM（Syft）
+      # ---------------------------
+      - name: Install Syft
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Generate SBOM
+        run: |
+          syft . -o spdx-json > sbom.spdx.json
+          syft . -o cyclonedx-json > sbom.cyclonedx.json
+
+      # ---------------------------
+      # 创建 GitHub Release
+      # ---------------------------
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "Release ${{ github.ref_name }}"
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ---------------------------
+      # 上传 SBOM 作为 Release 附件
+      # ---------------------------
+      - name: Upload SBOM (SPDX)
+        uses: softprops/action-gh-release@v2
+        with:
+          files: sbom.spdx.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload SBOM (CycloneDX)
+        uses: softprops/action-gh-release@v2
+        with:
+          files: sbom.cyclonedx.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ---------------------------
+      # 输出信息
+      # ---------------------------
+      - name: Final Info
+        run: |
+          echo "Release created: ${{ steps.create_release.outputs.url }}"
+          echo "SBOM files attached:"
+          echo " - sbom.spdx.json"
+          echo " - sbom.cyclonedx.json"

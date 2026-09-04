@@ -1,0 +1,72 @@
+name: Build & Publish Docker Image
+
+on:
+  push:
+    branches: 
+      - main
+    tags:
+      - v*.*.*
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ---------------------------
+      # 提取版本号（tag / dev）
+      # ---------------------------
+      - name: Extract version
+        id: version
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            VERSION="${GITHUB_REF_NAME}"
+          else
+            VERSION="dev-$(date +'%Y%m%d')-${GITHUB_SHA:0:7}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION=$VERSION"
+
+      # ---------------------------
+      # 登录 GHCR
+      # ---------------------------
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # ---------------------------
+      # 设置 buildx
+      # ---------------------------
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # ---------------------------
+      # 构建并推送镜像
+      # ---------------------------
+      - name: Build & Push Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/gpsterminalemulator:${{ steps.version.outputs.version }}
+            ghcr.io/${{ github.repository_owner }}/gpsterminalemulator:latest
+            ghcr.io/${{ github.repository_owner }}/gpsterminalemulator:sha-${{ github.sha }}
+
+      # ---------------------------
+      # 输出信息
+      # ---------------------------
+      - name: Final Info
+        run: |
+          echo "Published:"
+          echo " - ghcr.io/${{ github.repository_owner }}/gpsterminalemulator:${{ steps.version.outputs.version }}"
+          echo " - ghcr.io/${{ github.repository_owner }}/gpsterminalemulator:latest"
+          echo " - ghcr.io/${{ github.repository_owner }}/gpsterminalemulator:sha-${{ github.sha }}"
