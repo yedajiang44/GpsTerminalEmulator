@@ -6,13 +6,8 @@ namespace Jt808TerminalEmulator.Core;
 /// <summary>
 /// 经纬度插值
 /// </summary>
-public class LocationInterpolation
+public class LocationInterpolation(ILogger<LocationInterpolation> logger)
 {
-    private readonly ILogger logger;
-    public LocationInterpolation(ILogger<LocationInterpolation> logger)
-    {
-        this.logger = logger;
-    }
     readonly long radius = 6371393; // 地球的平均半径，以km为单位
     readonly double pi = Math.PI;
 
@@ -204,6 +199,7 @@ public class LocationInterpolation
             }
             var endLocation = IntermediaryLocation(startLocation, locations[nextIndex], nextDistance);
             distance = CalculateDistanceBetweenLocations(endLocation, locations[nextIndex]);
+            endLocation.Angle = Math.Round(CalculateBearing(startLocation, endLocation)) % 360;
             logger.LogDebug($"当前索引：{nextIndex}，差值{distance}起点[{startLocation.Logintude},{startLocation.Latitude}]终点,[{endLocation.Logintude},{endLocation.Latitude}],第{locations[nextIndex].Order}个关键点[{locations[nextIndex].Logintude},{locations[nextIndex].Latitude}]");
             return endLocation;
         }

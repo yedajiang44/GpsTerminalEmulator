@@ -18,4 +18,9 @@ public class LocationDto : BaseDto
     /// 纬度
     /// </summary>
     public double Latitude { get; set; }
+
+    /// <summary>
+    /// 方向/航向角 (0-359度)
+    /// </summary>
+    public double Angle { get; set; }
 }

@@ -142,6 +142,7 @@ internal class TcpClientSession : ITcpClientSession
                     VehicleAlarm = Alarm,
                     VehicleStatus = Status,
                     Speed = (ushort)(speed * 10),
+                    Direction = (ushort)((int)Math.Round(location.Angle) % 360),
                     Longitude = (int)(location.Logintude * 10e5),
                     Latitude = (int)(location.Latitude * 10e5),
                     DateTime = DateTime.Now,
